@@ -478,9 +478,12 @@ function Home() {
         </div>
 
         <div className="mt-2xl flex justify-center">
-          <button className="bg-surface border-[3px] border-black px-xl py-md rounded-full font-h2 text-[1.5rem] shadow-brutal hover-lift active-press cursor-pointer">
+          <Link
+            to="/allprompt"
+            className="bg-surface border-[3px] border-black px-xl py-md rounded-full font-h2 text-[1.5rem] shadow-brutal hover-lift active-press cursor-pointer"
+          >
             Lihat Semua Prompt
-          </button>
+          </Link>
         </div>
       </section>
 

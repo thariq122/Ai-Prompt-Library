@@ -3,6 +3,7 @@ import Home from './pages/home';
 import Submit from './pages/submit';
 import Favorites from './pages/favorites';
 import About from './pages/about';
+import AllPrompt from './pages/allprompt';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import PageTransition from './components/PageTransition';
@@ -20,6 +21,7 @@ function App() {
             <Route path="/submit" element={<Submit />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/about" element={<About />} />
+            <Route path="/allprompt" element={<AllPrompt />} />
           </Routes>
         </PageTransition>
       </main>
