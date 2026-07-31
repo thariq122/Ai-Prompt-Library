@@ -5,36 +5,36 @@ function Favorites() {
     <div className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3]">
       {/* TopNavBar */}
       <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm flex justify-between items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
-          <div className="flex items-center gap-md">
+        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
+          <div className="flex justify-start">
             <Link
               to="/"
               className="font-headline-lg text-2xl font-black text-text-primary font-['Syne']"
             >
               PromptVault
             </Link>
-            <nav className="hidden md:flex gap-lg ml-xl">
-              <Link
-                to="/"
-                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-              >
-                Beranda
-              </Link>
-              <Link
-                to="/favorites"
-                className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
-              >
-                Favorit
-              </Link>
-              <Link
-                to="/about"
-                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-              >
-                Tentang
-              </Link>
-            </nav>
           </div>
-          <div className="flex items-center">
+          <nav className="hidden md:flex justify-center gap-lg">
+            <Link
+              to="/"
+              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+            >
+              Beranda
+            </Link>
+            <Link
+              to="/favorites"
+              className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
+            >
+              Favorit
+            </Link>
+            <Link
+              to="/about"
+              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+            >
+              Tentang
+            </Link>
+          </nav>
+          <div className="flex justify-end">
             <button className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center">
               <span className="material-symbols-outlined">menu</span>
             </button>

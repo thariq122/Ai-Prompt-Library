@@ -165,3 +165,173 @@
 .dark .active-press:active {
   box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.2);
 }
+
+/* ========================
+   HOME PAGE ANIMATIONS
+   ======================== */
+
+/* Float animation for decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(12deg); }
+  50% { transform: translateY(-12px) rotate(12deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gentle floating for badges */
+@keyframes float-badge {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50% { transform: translateY(-8px) rotate(-5deg); }
+}
+
+.animate-float-badge {
+  animation: float-badge 2.5s ease-in-out infinite;
+}
+
+/* Pulse glow for CTA button */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+  50% { box-shadow: 4px 4px 20px 4px rgba(132,67,155,0.3), 4px 4px 0px 0px rgba(0,0,0,1); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Sparkle for star ratings */
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.animate-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Hero text slide-in from left */
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+/* Hero text slide-in from right */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+/* Hero card slide-up */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Stagger delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+
+/* Filter button bounce */
+@keyframes bounce-click {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.animate-bounce-click:active {
+  animation: bounce-click 0.2s ease-out;
+}
+
+/* Rotating decorative circle */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Counter number pop-in */
+@keyframes pop-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* Card tilt hover effect */
+.card-tilt {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.card-tilt:hover {
+  transform: translate(-4px, -4px) rotate(-0.5deg);
+  box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+}
+
+/* Gradient shift for hero badge */
+@keyframes gradient-shift {
+  0%, 100% { background-color: #A3EAEF; }
+  50% { background-color: #b2f1c2; }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+/* Typewriter effect for hero subtitle */
+@keyframes blink-caret {
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: #84439b; }
+}
+
+/* Section reveal on scroll */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Bounce on copy */
+@keyframes bounce-copy {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.8); }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.animate-bounce-copy {
+  animation: bounce-copy 0.3s ease-out;
+}
