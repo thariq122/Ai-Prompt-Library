@@ -1,50 +1,110 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import gsap from 'gsap';
 
 function Home() {
   const [toastVisible, setToastVisible] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(null);
 
+  const heroRef = useRef(null);
+  const cardsRef = useRef(null);
+  const storyRef = useRef(null);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('opacity-100');
-            entry.target.classList.remove('opacity-0', 'translate-y-10');
-          }
-        });
-      },
-      { threshold: 0.1 }
+    // GSAP Hero Animation Timeline
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    
+    tl.fromTo(
+      '.hero-badge',
+      { opacity: 0, y: -20 },
+      { opacity: 1, y: 0, duration: 0.6 }
+    )
+    .fromTo(
+      '.hero-title',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8 },
+      '-=0.3'
+    )
+    .fromTo(
+      '.hero-desc',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6 },
+      '-=0.4'
+    )
+    .fromTo(
+      '.hero-cta',
+      { opacity: 0, scale: 0.9 },
+      { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
+      '-=0.3'
+    )
+    .fromTo(
+      '.hero-card-preview',
+      { opacity: 0, x: 50, rotation: 5 },
+      { opacity: 1, x: 0, rotation: 0, duration: 0.8 },
+      '-=0.6'
     );
 
-    document.querySelectorAll('.group').forEach((el) => {
-      el.classList.add(
-        'transition-all',
-        'duration-700',
-        'opacity-0',
-        'translate-y-10'
+    // Cards Stagger Animation on Scroll
+    const cards = cardsRef.current?.querySelectorAll('.group');
+    if (cards) {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.2,
+          scrollTrigger: {
+            trigger: cardsRef.current,
+            start: 'top 80%',
+          },
+        }
       );
-      observer.observe(el);
+    }
+
+    // Story Stats Stagger
+    const stats = storyRef.current?.querySelectorAll('.stat-box');
+    if (stats) {
+      gsap.fromTo(
+        stats,
+        { opacity: 0, scale: 0.8 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: storyRef.current,
+            start: 'top 75%',
+          },
+        }
+      );
+    }
+
+    // Floating decorative badge animation
+    gsap.to('.floating-badge', {
+      y: -10,
+      rotation: 15,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
     });
 
-    return () => observer.disconnect();
+    return () => {
+      tl.kill();
+    };
   }, []);
 
   const copyPrompt = (e) => {
     const button = e.currentTarget;
-    button.classList.add('bg-secondary-container');
+    gsap.to(button, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 });
     setToastVisible(true);
 
     setTimeout(() => {
       setToastVisible(false);
-      button.classList.remove('bg-secondary-container');
     }, 2000);
-
-    button.style.transform = 'scale(0.9)';
-    setTimeout(() => {
-      button.style.transform = 'scale(1)';
-    }, 150);
   };
 
   const toggleAccordion = (index) => {
@@ -52,7 +112,7 @@ function Home() {
   };
 
   return (
-    <div className="bg-background text-on-background font-body-md selection:bg-primary-container min-h-screen flex flex-col justify-between">
+    <div className="bg-background text-on-background font-body-md selection:bg-primary-container min-h-screen flex flex-col justify-between overflow-x-hidden">
       {/* Toast Notification */}
       <div
         className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-secondary-container border-[3px] border-black px-lg py-sm rounded-full shadow-brutal flex items-center gap-sm transition-all ${
@@ -72,36 +132,36 @@ function Home() {
 
       {/* Navigation */}
       <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm flex justify-between items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
-          <div className="flex items-center gap-md">
+        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
+          <div className="flex justify-start">
             <Link
               to="/"
               className="font-headline-lg text-2xl font-black text-text-primary font-headline-xl"
             >
               PromptVault
             </Link>
-            <nav className="hidden md:flex gap-lg ml-xl">
-              <Link
-                to="/"
-                className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
-              >
-                Beranda
-              </Link>
-              <Link
-                to="/favorites"
-                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-              >
-                Favorit
-              </Link>
-              <Link
-                to="/about"
-                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-              >
-                Tentang
-              </Link>
-            </nav>
           </div>
-          <div className="flex items-center">
+          <nav className="hidden md:flex justify-center gap-lg">
+            <Link
+              to="/"
+              className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
+            >
+              Beranda
+            </Link>
+            <Link
+              to="/favorites"
+              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+            >
+              Favorit
+            </Link>
+            <Link
+              to="/about"
+              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+            >
+              Tentang
+            </Link>
+          </nav>
+          <div className="flex justify-end">
             <button className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center">
               <span className="material-symbols-outlined">menu</span>
             </button>
@@ -110,21 +170,24 @@ function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-[140px] pb-xl px-margin-mobile md:px-margin-desktop overflow-hidden">
+      <section
+        ref={heroRef}
+        className="pt-[140px] pb-xl px-margin-mobile md:px-margin-desktop overflow-hidden"
+      >
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-xl items-center">
           <div className="relative z-10">
-            <div className="inline-block bg-badge-cyan border-[2px] border-black rounded-full px-md py-xs font-label-sm text-label-sm shadow-brutal-sm mb-md">
+            <div className="hero-badge inline-block bg-badge-cyan border-[2px] border-black rounded-full px-md py-xs font-label-sm text-label-sm shadow-brutal-sm mb-md">
               ⚡ Baru: Prompt Optimal untuk GPT-4o
             </div>
-            <h1 className="font-h1 text-h1 mb-lg leading-[1.05] font-black">
+            <h1 className="hero-title font-h1 text-h1 mb-lg leading-[1.05] font-black">
               Akses <span className="text-primary italic">Prompt AI</span> Terbaik
             </h1>
-            <p className="text-body-md text-on-surface-variant max-w-lg mb-xl text-lg">
+            <p className="hero-desc text-body-md text-on-surface-variant max-w-lg mb-xl text-lg">
               Marketplace premium untuk rekayasa prompt kelas dunia. Temukan,
               beli, dan jual prompt berkualitas tinggi untuk LLM, Penjana
               Gambar, dan model spesialis.
             </p>
-            <div className="flex flex-wrap gap-md">
+            <div className="hero-cta flex flex-wrap gap-md">
               <Link
                 to="/submit"
                 className="bg-secondary-fixed text-on-secondary-fixed px-xl py-md rounded-full border-[3px] border-black shadow-brutal font-h2 text-[1.25rem] hover-lift active-press inline-block"
@@ -133,7 +196,7 @@ function Home() {
               </Link>
             </div>
           </div>
-          <div className="relative lg:h-[600px] flex items-center justify-center">
+          <div className="hero-card-preview relative lg:h-[600px] flex items-center justify-center">
             {/* Decorative Element */}
             <div className="absolute inset-0 bg-accent-purple/10 rounded-[40px] border-[3px] border-dashed border-black/20 -rotate-3"></div>
             <div className="bg-surface p-lg border-[3px] border-black rounded-xl shadow-brutal-lg w-full max-w-[500px] relative">
@@ -151,7 +214,7 @@ function Home() {
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-xs">
-                  <span className="material-symbols-outlined text-badge-orange filled-icon">
+                  <span className="material-symbols-outlined text-badge-orange filled-icon animate-sparkle">
                     star
                   </span>
                   <span className="font-label-sm text-label-sm">
@@ -162,7 +225,7 @@ function Home() {
               </div>
             </div>
             {/* Floaties */}
-            <div className="absolute -top-4 -right-4 bg-badge-orange border-[2px] border-black px-md py-sm rounded-xl shadow-brutal rotate-12 hidden md:block">
+            <div className="floating-badge absolute -top-4 -right-4 bg-badge-orange border-[2px] border-black px-md py-sm rounded-xl shadow-brutal hidden md:block">
               <span className="font-label-sm">Terlaris!</span>
             </div>
           </div>
@@ -228,25 +291,25 @@ function Home() {
       <section className="py-xl px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row gap-lg justify-between items-center mb-2xl">
           <div className="flex flex-wrap gap-sm justify-center md:justify-start">
-            <button className="bg-on-background text-surface px-md py-sm rounded-full font-label-sm border-[2px] border-black shadow-brutal-sm cursor-pointer">
+            <button className="bg-on-background text-surface px-md py-sm rounded-full font-label-sm border-[2px] border-black shadow-brutal-sm cursor-pointer hover:scale-105 transition-transform">
               Semua Model
             </button>
-            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-primary-container transition-all cursor-pointer">
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-primary-container transition-all cursor-pointer hover:scale-105">
               ChatGPT-4
             </button>
-            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-cyan transition-all cursor-pointer">
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-cyan transition-all cursor-pointer hover:scale-105">
               Midjourney
             </button>
-            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-orange transition-all cursor-pointer">
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-orange transition-all cursor-pointer hover:scale-105">
               DALL-E 3
             </button>
-            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-secondary-fixed transition-all cursor-pointer">
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-secondary-fixed transition-all cursor-pointer hover:scale-105">
               Claude 3
             </button>
           </div>
           <div className="relative w-full max-w-md">
             <input
-              className="w-full bg-surface border-[3px] border-black rounded-full px-xl py-md shadow-brutal focus:ring-0 focus:outline-none"
+              className="w-full bg-surface border-[3px] border-black rounded-full px-xl py-md shadow-brutal focus:ring-0 focus:outline-none transition-all focus:translate-x-1"
               placeholder="Cari prompt, model, penulis..."
               type="text"
             />
@@ -257,17 +320,17 @@ function Home() {
         </div>
 
         {/* Prompt Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
+        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
           {/* Card 1 */}
-          <div className="group relative bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
-            <div className="absolute -top-4 -left-2 bg-accent-purple text-surface px-md py-xs rounded-full border-[2px] border-black font-label-sm rotate-[-5deg] z-10">
+          <div className="group relative bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
+            <div className="absolute -top-4 -left-2 bg-accent-purple text-surface px-md py-xs rounded-full border-[2px] border-black font-label-sm rotate-[-5deg] z-10 animate-float-badge">
               Unggulan!
             </div>
             <div className="flex justify-between items-start mb-md">
               <span className="bg-badge-cyan border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
                 MIDJOURNEY
               </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
                 <span className="material-symbols-outlined">favorite</span>
               </button>
             </div>
@@ -308,12 +371,12 @@ function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
+          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
             <div className="flex justify-between items-start mb-md">
               <span className="bg-primary-container border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
                 GPT-4
               </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
                 <span className="material-symbols-outlined">favorite</span>
               </button>
             </div>
@@ -354,12 +417,12 @@ function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
+          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
             <div className="flex justify-between items-start mb-md">
               <span className="bg-badge-orange border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
                 DALL-E 3
               </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
                 <span className="material-symbols-outlined">favorite</span>
               </button>
             </div>
@@ -407,7 +470,10 @@ function Home() {
       </section>
 
       {/* Story Section */}
-      <section className="bg-accent-purple py-[120px] px-margin-mobile md:px-margin-desktop overflow-hidden relative">
+      <section
+        ref={storyRef}
+        className="bg-accent-purple py-[120px] px-margin-mobile md:px-margin-desktop overflow-hidden relative"
+      >
         <div className="absolute top-20 left-20 w-32 h-32 border-[3px] border-white/20 rounded-full animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-48 h-48 border-[3px] border-white/20 rounded-lg rotate-12"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -421,21 +487,21 @@ function Home() {
             memulai dengan layar kosong lagi.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
-            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+            <div className="stat-box bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
               <div className="font-h1 text-[3rem] text-surface mb-xs">
                 50rb+
               </div>
               <div className="text-surface/80 font-label-sm">Pengguna</div>
             </div>
-            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+            <div className="stat-box bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
               <div className="font-h1 text-[3rem] text-surface mb-xs">12Jt</div>
               <div className="text-surface/80 font-label-sm">Generasi</div>
             </div>
-            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+            <div className="stat-box bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
               <div className="font-h1 text-[3rem] text-surface mb-xs">99%</div>
               <div className="text-surface/80 font-label-sm">Keberhasilan</div>
             </div>
-            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+            <div className="stat-box bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
               <div className="font-h1 text-[3rem] text-surface mb-xs">$450rb</div>
               <div className="text-surface/80 font-label-sm">
                 Dibayar ke Penulis
