@@ -192,7 +192,7 @@ function Home() {
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-xl items-center">
           <div className="relative z-10">
             <div className="hero-badge inline-block bg-badge-cyan border-[2px] border-black rounded-full px-md py-xs font-label-sm text-label-sm shadow-brutal-sm mb-md">
-              ⚡ Baru: Prompt Optimal untuk GPT-4o
+              SELAMAT DATANG DI PROMPT VAULT!
             </div>
             <h1 className="hero-title font-h1 text-h1 mb-lg leading-[1.05] font-black">
               Akses <span className="text-primary italic">Prompt AI</span> Terbaik

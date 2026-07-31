@@ -1,13 +1,151 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 function About() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero: text slides up with stagger
+      gsap.from('.about-hero-text > *', {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out'
+      });
+
+      // Hero: image scales in from right with rotation
+      gsap.from('.about-hero-image', {
+        x: 60,
+        rotation: 3,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.2
+      });
+
+      // Mission Section: left sidebar slides from left, content from right
+      gsap.from('.about-mission .sticky', {
+        x: -60,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.about-mission',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+      gsap.from('.about-mission .md\\:col-span-8 > *', {
+        x: 60,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.about-mission',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Models Grid: each card alternates left/right with bounce
+      const modelCards = gsap.utils.toArray('.model-card');
+      modelCards.forEach((card, i) => {
+        const direction = i % 2 === 0 ? -1 : 1;
+        gsap.from(card, {
+          x: direction * 80,
+          y: 30,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'back.out(1.4)',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+      });
+
+      // Vision Section: text from left, images from right
+      gsap.from('.vision-section .relative.z-10 > div:first-child', {
+        x: -60,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.vision-section',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+      gsap.from('.vision-section .grid.grid-cols-2 > *', {
+        x: 60,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.vision-section',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Footer CTA: splits from center
+      gsap.from('.about-footer-cta .max-w-md', {
+        x: -50,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.about-footer-cta',
+          start: 'top 90%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+      gsap.from('.about-footer-cta .max-w-lg', {
+        x: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.about-footer-cta',
+          start: 'top 90%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Footer columns stagger in
+      gsap.from('.about-footer .grid > *', {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.about-footer',
+          start: 'top 90%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="font-body-md overflow-x-hidden bg-[#F3EAE3] text-[#000000] min-h-screen flex flex-col justify-between">
+    <div className="font-body-md overflow-x-hidden bg-[#F3EAE3] text-[#000000] min-h-screen flex flex-col justify-between" ref={containerRef}>
 
       <main className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl space-y-2xl flex-grow w-full">
         {/* Hero Section */}
         <section className="flex flex-col md:flex-row items-center gap-xl">
-          <div className="flex-1 space-y-md">
+          <div className="flex-1 space-y-md about-hero-text">
             <span className="bg-badge-cyan border-2 border-border px-4 py-1 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-sm inline-block">
               TENTANG PROMPTVAULT
             </span>
@@ -22,7 +160,7 @@ function About() {
               untuk manusia.
             </p>
           </div>
-          <div className="flex-1 relative w-full h-[400px]">
+          <div className="flex-1 relative w-full h-[400px] about-hero-image">
             <div className="absolute inset-0 bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden"></div>
             <div className="absolute -bottom-6 -right-6 bg-badge-orange p-lg max-w-[200px] z-10 rotate-3 bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-bold text-center">1Jt+ Prompt Dikurasi</p>
@@ -31,7 +169,7 @@ function About() {
         </section>
 
         {/* Our Mission */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start">
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start about-mission">
           <div className="md:col-span-4 sticky top-32">
             <h2 className="font-headline-lg text-headline-lg font-black">
               Misi Kami
@@ -80,7 +218,7 @@ function About() {
         </section>
 
         {/* Supported Models */}
-        <section className="space-y-xl">
+        <section className="space-y-xl models-section">
           <div className="text-center space-y-sm">
             <h2 className="font-headline-lg text-headline-lg font-black">
               Dukungan AI Omnichannel
@@ -92,7 +230,7 @@ function About() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
             {/* GPT-4 */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
               <div className="w-16 h-16 rounded-full bg-primary-container border-2 border-border flex items-center justify-center">
                 <span
                   className="material-symbols-outlined text-3xl"
@@ -107,7 +245,7 @@ function About() {
               </span>
             </div>
             {/* Midjourney */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
               <div className="w-16 h-16 rounded-full bg-secondary-container border-2 border-border flex items-center justify-center">
                 <span
                   className="material-symbols-outlined text-3xl"
@@ -122,7 +260,7 @@ function About() {
               </span>
             </div>
             {/* Claude */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
               <div className="w-16 h-16 rounded-full bg-surface-container-highest border-2 border-border flex items-center justify-center">
                 <span
                   className="material-symbols-outlined text-3xl"
@@ -137,7 +275,7 @@ function About() {
               </span>
             </div>
             {/* DALL-E */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
               <div className="w-16 h-16 rounded-full bg-error-container border-2 border-border flex items-center justify-center">
                 <span
                   className="material-symbols-outlined text-3xl"
@@ -155,7 +293,7 @@ function About() {
         </section>
 
         {/* The Vision / Team */}
-        <section className="bg-primary text-on-primary p-xl overflow-hidden relative border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <section className="bg-primary text-on-primary p-xl overflow-hidden relative border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] vision-section">
           <div className="absolute -right-20 -top-20 w-64 h-64 border-[10px] border-black/20 rounded-full"></div>
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
             <div className="space-y-md">
@@ -200,7 +338,7 @@ function About() {
       </main>
 
       {/* Footer CTA & Footer */}
-      <section className="pb-2xl px-margin-mobile md:px-margin-desktop">
+      <section className="pb-2xl px-margin-mobile md:px-margin-desktop about-footer-cta">
         <div className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl">
           <div className="max-w-md">
             <h2 className="font-headline-lg text-[2.5rem] mb-md leading-tight font-black">
@@ -224,7 +362,7 @@ function About() {
         </div>
       </section>
 
-      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop">
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop about-footer">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
           <div className="col-span-1 md:col-span-2">
             <Link

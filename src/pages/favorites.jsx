@@ -1,12 +1,106 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 function Favorites() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero section entrance animation (stagger children)
+      gsap.from('.favorites-hero > *', {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out'
+      });
+
+      // Fav cards: alternating left/right with stagger & bounce
+      const favCards = gsap.utils.toArray('.favorite-card');
+      favCards.forEach((card, i) => {
+        const direction = i % 2 === 0 ? -1 : 1;
+        gsap.from(card, {
+          x: direction * 80,
+          opacity: 0,
+          duration: 0.9,
+          ease: 'back.out(1.5)',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+      });
+
+      // Featured card (bento) — slides in from the right
+      gsap.from('.featured-card', {
+        x: 80,
+        y: 30,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.featured-card',
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // CTA card — pops in
+      gsap.from('.cta-card', {
+        scale: 0.7,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'elastic.out(1, 0.6)',
+        scrollTrigger: {
+          trigger: '.cta-card',
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Footer CTA section
+      gsap.from('.footer-cta > *', {
+        y: 35,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.footer-cta',
+          start: 'top 90%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Footer columns stagger in
+      gsap.from('.site-footer > *', {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.site-footer',
+          start: 'top 90%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3]">
+    <div className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3]" ref={containerRef}>
 
       <main className="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">
         {/* Hero Section / Title */}
-        <div className="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div className="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md favorites-hero">
           <div>
             <h1 className="font-headline-xl text-headline-xl-mobile md:text-headline-xl mb-xs font-['Syne'] font-black">
               Favorit Tersimpan Anda
@@ -30,9 +124,9 @@ function Favorites() {
         </div>
 
         {/* Favorites Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter favorites-grid">
           {/* Prompt Card 1 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
+          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
             <div className="flex justify-between items-start mb-md">
               <div className="flex gap-sm">
                 <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -83,7 +177,7 @@ function Favorites() {
           </div>
 
           {/* Prompt Card 2 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
+          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
             <div className="flex justify-between items-start mb-md">
               <div className="flex gap-sm">
                 <span className="bg-secondary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -135,7 +229,7 @@ function Favorites() {
           </div>
 
           {/* Prompt Card 3 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
+          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
             <div className="flex justify-between items-start mb-md">
               <div className="flex gap-sm">
                 <span className="bg-primary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -187,7 +281,7 @@ function Favorites() {
           </div>
 
           {/* Featured Card - Bento Style */}
-          <div className="md:col-span-2 lg:col-span-1 bg-tertiary-fixed border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between overflow-hidden relative group">
+          <div className="md:col-span-2 lg:col-span-1 bg-tertiary-fixed border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between overflow-hidden relative group featured-card">
             <div className="relative z-10">
               <h3 className="font-headline-lg text-3xl mb-md leading-tight">
                 Kuasai Seni Prompting
@@ -208,7 +302,7 @@ function Favorites() {
           </div>
 
           {/* Prompt Card 4 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
+          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
             <div className="flex justify-between items-start mb-md">
               <div className="flex gap-sm">
                 <span className="bg-secondary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -255,7 +349,7 @@ function Favorites() {
           </div>
 
           {/* Browse More CTA Card */}
-          <div className="bg-surface-container border-[3px] border-border border-dashed rounded-xl p-lg flex flex-col items-center justify-center text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
+          <div className="bg-surface-container border-[3px] border-border border-dashed rounded-xl p-lg flex flex-col items-center justify-center text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group cta-card">
             <div className="w-16 h-16 bg-primary-container border-2 border-border rounded-full flex items-center justify-center mb-md shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined text-4xl">add</span>
             </div>
@@ -276,7 +370,7 @@ function Favorites() {
       </main>
 
       {/* Footer CTA & Footer */}
-      <section className="pb-2xl px-margin-mobile md:px-margin-desktop">
+      <section className="pb-2xl px-margin-mobile md:px-margin-desktop footer-cta">
         <div className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl">
           <div className="max-w-md">
             <h2 className="font-h1 text-[2.5rem] mb-md leading-tight font-black font-['Syne']">
@@ -300,7 +394,7 @@ function Favorites() {
         </div>
       </section>
 
-      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop">
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop site-footer">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
           <div className="col-span-1 md:col-span-2">
             <Link
