@@ -1,559 +1,668 @@
-import { useEffect, useRef, useState } from 'react';
-import './home.css';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function Home() {
-  const [dark, setDark] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return (
-      localStorage.getItem('theme') === 'dark' ||
-      (!('theme' in localStorage) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
-    );
-  });
-
-  const [modal, setModal] = useState({ open: false, title: '', prompt: '' });
   const [toastVisible, setToastVisible] = useState(false);
-  const [faqOpen, setFaqOpen] = useState([false, false]);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-  }, [dark]);
-
-  useEffect(() => {
-    if (modal.open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [modal.open]);
+  const [accordionOpen, setAccordionOpen] = useState(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('active');
+            entry.target.classList.add('opacity-100');
+            entry.target.classList.remove('opacity-0', 'translate-y-10');
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.1 }
     );
 
-    const targets = sectionRef.current
-      ? sectionRef.current.querySelectorAll('.reveal')
-      : [];
-    targets.forEach((el) => observer.observe(el));
+    document.querySelectorAll('.group').forEach((el) => {
+      el.classList.add(
+        'transition-all',
+        'duration-700',
+        'opacity-0',
+        'translate-y-10'
+      );
+      observer.observe(el);
+    });
 
     return () => observer.disconnect();
   }, []);
 
-  const openModal = (title, prompt) => {
-    setModal({ open: true, title, prompt });
+  const copyPrompt = (e) => {
+    const button = e.currentTarget;
+    button.classList.add('bg-secondary-container');
+    setToastVisible(true);
+
+    setTimeout(() => {
+      setToastVisible(false);
+      button.classList.remove('bg-secondary-container');
+    }, 2000);
+
+    button.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+      button.style.transform = 'scale(1)';
+    }, 150);
   };
 
-  const closeModal = () => {
-    setModal({ open: false, title: '', prompt: '' });
+  const toggleAccordion = (index) => {
+    setAccordionOpen(accordionOpen === index ? null : index);
   };
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') closeModal();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const copyToClipboard = () => {
-    if (!modal.prompt) return;
-    navigator.clipboard.writeText(modal.prompt).then(() => {
-      setToastVisible(true);
-      setTimeout(() => setToastVisible(false), 3000);
-    });
-  };
-
-  const toggleFaq = (index) => {
-    setFaqOpen((prev) => prev.map((v, i) => (i === index ? !v : v)));
-  };
-
-  const promptCards = [
-    {
-      featured: true,
-      model: 'Midjourney v6',
-      modelClass: 'bg-tertiary-container text-on-tertiary-container',
-      price: '$4.99',
-      title: 'Neon Cyberpunk Dream',
-      description:
-        'Generate stunningly detailed rainy streets with deep purple and cyan color grading.',
-      preview:
-        'A hyper-realistic cyberpunk city at night, neon lights reflecting on wet pavement...',
-      fullPrompt:
-        'A hyper-realistic cyberpunk city at night, neon lights reflecting on wet pavement, cinematic lighting, 8k resolution, shot on 35mm lens --v 6.0',
-      author: 'by Pixerati',
-      rating: 4.9,
-      copies: '1.2k',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuA1vdidxFKCM5ZBbnxcuKHtyhTa-0PH93EVGUj1lKspWwQg3MStEKiX7mrJtNVpSbp0eow_QfY2VAtW2AqLZa-dQAmN6YjmRR3S66qQfT_5ythix7_wBxUjNxsi5kGjklujs7nvoi3iuhVjl-UOqtKgFoyNLKTIPefJi2xNWQCFDDWZjR7phRC-QyN_A8X3j5_XB0UWSSVNt_XqK2tt6M15cLv56f5YdLOZESoPtmShIxwWlYajoz2v',
-    },
-    {
-      featured: false,
-      model: 'ChatGPT-4',
-      modelClass: 'bg-secondary-container text-on-secondary-container',
-      price: 'Free',
-      title: 'React Expert Architect',
-      description:
-        'Professional code reviewer persona for large-scale React applications.',
-      preview:
-        'Act as a Senior Software Architect. Review this component and suggest optimizations...',
-      fullPrompt:
-        'Act as a Senior Software Architect. Review this component and suggest optimizations for performance, accessibility, and clean code patterns.',
-      author: 'by DevMaster',
-      rating: 5.0,
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBxB-WfCQRt1M6Amq8KdxHqinwVhEZ74B2F-6Q53Gnl8mdusyMLWPdyq4VArcKOTL0liA0mWsBVx0mnmF04O8AuRk0vIud7gsn9YuFuhrRrH0A-0tpLdH7IGhhKyzyw2xOoUA05BePGQV8za4xOV2H0EC9s9O2oycyCZpmXagNUsaS-BA0vntB72GyZpLKwJLZDBFPuV2ppifWyxVYyIwWWtQahIZsRf1pR4j8SiBKssEZUxWN37p7E',
-    },
-    {
-      featured: false,
-      model: 'Claude 3.5',
-      modelClass: 'bg-primary-container text-on-primary-container',
-      price: '$2.50',
-      title: 'SaaS Sales Engine',
-      description:
-        'Copywriting prompt engineered for conversion-focused landing pages.',
-      preview:
-        'Write a high-converting sales page for a SaaS product that solves [PROBLEM]...',
-      fullPrompt:
-        'Write a high-converting sales page for a SaaS product that solves [PROBLEM] for [AUDIENCE].',
-      author: 'by CopyQueen',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAKBuFR_Sp9Kte1lR9XI38WTStMIjCul94jaAZtHBMAGWRJFXPsEYEQE2fCFz3uHCHyccCCVxXrMo7uGIitR3Ll89dOwXqgY9WwimkIEiObqiI82t85W5J8RbY0-vAskrnzJ9GA_OaGEMwrkFcTRKOnDZqSxV3Q-0krn1brKGTFTcCe5owQJrSqyzTgB4CfnBZISsNTT-QuLiC_kOrlgvV0t4WIXdvhUYC00uS0rQKNPwnUOgx3ZVnJ',
-    },
-  ];
 
   return (
-    <div
-      ref={sectionRef}
-      className="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container transition-colors duration-300"
-    >
-      {/* Navbar */}
-      <header className="sticky top-4 z-50 w-full px-margin-mobile md:px-margin-desktop">
-        <nav className="bg-surface border-[3px] border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between px-lg py-sm max-w-7xl mx-auto dark:border-white transition-all">
-          <div className="flex items-center gap-sm">
-            <span className="font-headline-lg text-headline-lg font-black text-on-surface uppercase italic tracking-tighter">
-              AIPromptLibrary
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-lg">
-            <a
-              className="font-label-sm text-label-sm text-primary dark:text-primary-container font-bold underline decoration-2 underline-offset-4 hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-              href="#"
-            >
-              Explore
-            </a>
-            <a
-              className="font-label-sm text-label-sm text-on-surface font-medium hover:text-primary transition-all"
-              href="#"
-            >
-              Creators
-            </a>
-            <a
-              className="font-label-sm text-label-sm text-on-surface font-medium hover:text-primary transition-all"
-              href="#"
-            >
-              Vaults
-            </a>
-            <a
-              className="font-label-sm text-label-sm text-on-surface font-medium hover:text-primary transition-all"
-              href="#"
-            >
-              Pricing
-            </a>
-          </div>
+    <div className="bg-background text-on-background font-body-md selection:bg-primary-container min-h-screen flex flex-col justify-between">
+      {/* Toast Notification */}
+      <div
+        className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-secondary-container border-[3px] border-black px-lg py-sm rounded-full shadow-brutal flex items-center gap-sm transition-all ${
+          toastVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 -translate-y-5 pointer-events-none'
+        }`}
+        id="copy-toast"
+      >
+        <span className="material-symbols-outlined text-on-secondary-container">
+          check_circle
+        </span>
+        <span className="font-label-sm text-label-sm text-on-secondary-container">
+          Prompt Berhasil Disalin!
+        </span>
+      </div>
+
+      {/* Navigation */}
+      <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
+        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm flex justify-between items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
           <div className="flex items-center gap-md">
-            <button
-              className="w-10 h-10 border-[3px] border-black dark:border-white rounded-full bg-white dark:bg-surface-bright flex items-center justify-center hover:bg-surface-container transition-colors click-press"
-              onClick={() => setDark((prev) => !prev)}
-              aria-label="Toggle dark mode"
+            <Link
+              to="/"
+              className="font-headline-lg text-2xl font-black text-text-primary font-headline-xl"
             >
-              <span className="material-symbols-outlined dark:hidden">
-                dark_mode
-              </span>
-              <span className="material-symbols-outlined hidden dark:block">
-                light_mode
-              </span>
-            </button>
-            <div className="hidden sm:block border-[3px] border-black dark:border-white rounded-full p-xs hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] transition-all cursor-pointer">
-              <img
-                alt="Avatar"
-                className="w-8 h-8 rounded-full border border-black dark:border-white"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlDpU8GENeQa6qARiS4Sq6MbL4YrlKH_l9DkQ6rphsnMdyqZWfrNXJH-LWcnzHJ3Dq7D8u54gUt9tldqllyor4bfb0ED1vpjQHpeYe4x_BgeWAUk_gYQHi5V-HZIYbEYYgfwSTmWOzwdMNosUUvZ-fLzOiAzvRKwJwU5ecevH8OwQHSvSUkpl_ZVRbsSLZNTjWB8kgbC5M5mbfV637Ytdl-UrQ5Kuq_1q6-EHEghsNokS7XKqA8bLK"
-              />
-            </div>
-            <button className="bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold px-lg py-sm rounded-full border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] active:scale-95 duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all click-press">
-              Vault Access
+              PromptVault
+            </Link>
+            <nav className="hidden md:flex gap-lg ml-xl">
+              <Link
+                to="/"
+                className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
+              >
+                Beranda
+              </Link>
+              <Link
+                to="/favorites"
+                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+              >
+                Favorit
+              </Link>
+              <Link
+                to="/about"
+                className="font-bold text-on-surface-variant hover:text-primary transition-colors"
+              >
+                Tentang
+              </Link>
+            </nav>
+          </div>
+          <div className="flex items-center">
+            <button className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center">
+              <span className="material-symbols-outlined">menu</span>
             </button>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-2xl pb-xl px-margin-mobile md:px-margin-desktop flex flex-col items-center text-center reveal">
-        <div className="max-w-4xl">
-          <h1 className="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-background mb-lg leading-[0.95]">
-            Unlock the Best <br />
-            <span className="bg-secondary-container dark:bg-secondary px-4 py-1 border-[3px] border-black dark:border-white inline-block rotate-[-2deg] text-shadow-hard text-white dark:text-on-secondary">
-              AI Prompts
-            </span>
-          </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto mb-xl">
-            The world&apos;s most curated library of high-performing prompts for
-            ChatGPT, Midjourney, and Claude. Stop hallucinating, start creating.
-          </p>
-          <div className="flex flex-wrap justify-center gap-lg">
-            <button className="bg-primary-container text-on-primary-container font-headline-lg-mobile px-xl py-md rounded-full border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.3)] transition-all active:translate-x-0 active:translate-y-0 active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] click-press">
-              Explore Vault
-            </button>
-            <button className="bg-secondary-container text-on-secondary-container font-headline-lg-mobile px-xl py-md rounded-full border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-0 active:translate-y-0 click-press">
-              Submit Prompt
-            </button>
+      <section className="pt-[140px] pb-xl px-margin-mobile md:px-margin-desktop overflow-hidden">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-xl items-center">
+          <div className="relative z-10">
+            <div className="inline-block bg-badge-cyan border-[2px] border-black rounded-full px-md py-xs font-label-sm text-label-sm shadow-brutal-sm mb-md">
+              ⚡ Baru: Prompt Optimal untuk GPT-4o
+            </div>
+            <h1 className="font-h1 text-h1 mb-lg leading-[1.05] font-black">
+              Akses <span className="text-primary italic">Prompt AI</span> Terbaik
+            </h1>
+            <p className="text-body-md text-on-surface-variant max-w-lg mb-xl text-lg">
+              Marketplace premium untuk rekayasa prompt kelas dunia. Temukan,
+              beli, dan jual prompt berkualitas tinggi untuk LLM, Penjana
+              Gambar, dan model spesialis.
+            </p>
+            <div className="flex flex-wrap gap-md">
+              <Link
+                to="/submit"
+                className="bg-secondary-fixed text-on-secondary-fixed px-xl py-md rounded-full border-[3px] border-black shadow-brutal font-h2 text-[1.25rem] hover-lift active-press inline-block"
+              >
+                Setorkan Prompt
+              </Link>
+            </div>
+          </div>
+          <div className="relative lg:h-[600px] flex items-center justify-center">
+            {/* Decorative Element */}
+            <div className="absolute inset-0 bg-accent-purple/10 rounded-[40px] border-[3px] border-dashed border-black/20 -rotate-3"></div>
+            <div className="bg-surface p-lg border-[3px] border-black rounded-xl shadow-brutal-lg w-full max-w-[500px] relative">
+              <div className="flex items-center gap-sm mb-md">
+                <div className="w-3 h-3 rounded-full bg-error border border-black"></div>
+                <div className="w-3 h-3 rounded-full bg-badge-orange border border-black"></div>
+                <div className="w-3 h-3 rounded-full bg-secondary-fixed border border-black"></div>
+              </div>
+              <div className="bg-surface-container rounded-lg p-md mb-md border-[2px] border-black font-code-sm text-code-sm">
+                <p className="text-on-primary-fixed-variant">
+                  &quot;Bertindaklah sebagai arsitek ahli di masa depan solarpunk.
+                  Deskripsikan kota hutan vertikal hanya menggunakan metafora
+                  sensorik...&quot;
+                </p>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-badge-orange filled-icon">
+                    star
+                  </span>
+                  <span className="font-label-sm text-label-sm">
+                    4.9 (1.2rb)
+                  </span>
+                </div>
+                <span className="font-h2 text-[1.5rem]">Rp140.000</span>
+              </div>
+            </div>
+            {/* Floaties */}
+            <div className="absolute -top-4 -right-4 bg-badge-orange border-[2px] border-black px-md py-sm rounded-xl shadow-brutal rotate-12 hidden md:block">
+              <span className="font-label-sm">Terlaris!</span>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Animated Marquee */}
+      <div className="bg-tertiary-fixed border-y-[3px] border-black py-md overflow-hidden relative">
+        <div className="animate-marquee whitespace-nowrap flex items-center">
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Prompt Baru Setiap Hari{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              auto_awesome
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Optimasi GPT-4{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              psychology
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Siap untuk Midjourney 6.0{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              palette
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Terverifikasi Claude 3 Opus{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              shield
+            </span>
+          </span>
+          {/* Duplicated for seamless loop */}
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Prompt Baru Setiap Hari{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              auto_awesome
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Optimasi GPT-4{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              psychology
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Siap untuk Midjourney 6.0{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              palette
+            </span>
+          </span>
+          <span className="font-h2 text-h2 uppercase mx-xl flex items-center gap-md">
+            Terverifikasi Claude 3 Opus{' '}
+            <span className="material-symbols-outlined text-[3rem]">
+              shield
+            </span>
+          </span>
+        </div>
+      </div>
 
       {/* Filters & Search */}
-      <section className="px-margin-mobile md:px-margin-desktop mb-xl reveal">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-lg items-center">
-            <div className="relative w-full lg:flex-1">
-              <span className="material-symbols-outlined absolute left-lg top-1/2 -translate-y-1/2 text-on-surface-variant">
-                search
-              </span>
-              <input
-                className="w-full bg-white border-[3px] border-black dark:border-white rounded-full py-md pl-14 pr-lg font-body-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] focus:outline-none focus:ring-4 focus:ring-primary/20 dark:bg-surface-bright"
-                placeholder="Search for 'Cinematic Portraits'..."
-                type="text"
-              />
+      <section className="py-xl px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto w-full">
+        <div className="flex flex-col md:flex-row gap-lg justify-between items-center mb-2xl">
+          <div className="flex flex-wrap gap-sm justify-center md:justify-start">
+            <button className="bg-on-background text-surface px-md py-sm rounded-full font-label-sm border-[2px] border-black shadow-brutal-sm cursor-pointer">
+              Semua Model
+            </button>
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-primary-container transition-all cursor-pointer">
+              ChatGPT-4
+            </button>
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-cyan transition-all cursor-pointer">
+              Midjourney
+            </button>
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-badge-orange transition-all cursor-pointer">
+              DALL-E 3
+            </button>
+            <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-secondary-fixed transition-all cursor-pointer">
+              Claude 3
+            </button>
+          </div>
+          <div className="relative w-full max-w-md">
+            <input
+              className="w-full bg-surface border-[3px] border-black rounded-full px-xl py-md shadow-brutal focus:ring-0 focus:outline-none"
+              placeholder="Cari prompt, model, penulis..."
+              type="text"
+            />
+            <span className="material-symbols-outlined absolute right-lg top-1/2 -translate-y-1/2 text-on-surface-variant">
+              search
+            </span>
+          </div>
+        </div>
+
+        {/* Prompt Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
+          {/* Card 1 */}
+          <div className="group relative bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
+            <div className="absolute -top-4 -left-2 bg-accent-purple text-surface px-md py-xs rounded-full border-[2px] border-black font-label-sm rotate-[-5deg] z-10">
+              Unggulan!
             </div>
-            <div className="flex flex-wrap justify-center gap-sm">
-              <button className="px-lg py-sm bg-primary text-white border-[3px] border-black dark:border-white rounded-full font-label-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] click-press">
-                All Models
+            <div className="flex justify-between items-start mb-md">
+              <span className="bg-badge-cyan border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
+                MIDJOURNEY
+              </span>
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+                <span className="material-symbols-outlined">favorite</span>
               </button>
-              <button className="px-lg py-sm bg-surface dark:bg-surface-bright border-[3px] border-black dark:border-white rounded-full font-label-sm hover:bg-surface-container-highest transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] click-press">
-                ChatGPT-4
+            </div>
+            <h3 className="font-h2 text-[1.25rem] mb-sm">
+              Neo-Tokyo Cinematic Stills
+            </h3>
+            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
+              Prompt fotografi 8k sangat detail untuk lingkungan urban
+              futuristik dengan pencahayaan neon.
+            </p>
+            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
+              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
+                /imagine prompt: Cyberpunk cityscape, rainy night, neon
+                reflections --v 6.0
+              </pre>
+              <button
+                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
+                onClick={copyPrompt}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  content_copy
+                </span>
               </button>
-              <button className="px-lg py-sm bg-surface dark:bg-surface-bright border-[3px] border-black dark:border-white rounded-full font-label-sm hover:bg-surface-container-highest transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] click-press">
-                Midjourney v6
+            </div>
+            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
+              <div className="flex items-center gap-sm">
+                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-orange overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover"
+                    alt="Avatar"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVuje3odSoHu732GKwugz-AkMep9ExpXfDI2M9SQFvnejvZfAHKyaPbyyTAqd80RvX36M5RiEfmvQV2ZH2d5mMo8Vy5kNb3mSOaxlsvb5raVAiMNrmOaeWm2gp8qWITV4guy40fDNCmhctCaQaMfi7sRq7CkORHPD93zj3p1jVzoU1FFUr63bFIW2FNUAEZuR2d3p2Ym2r9CDWzTOYMTGCRUD2j19BsEEvKBkfWNHxvLjkW8DhvEvxlg"
+                  />
+                </div>
+                <span className="font-label-sm text-sm">@pixel_ninja</span>
+              </div>
+              <span className="font-h2 text-xl">Rp90rb</span>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
+            <div className="flex justify-between items-start mb-md">
+              <span className="bg-primary-container border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
+                GPT-4
+              </span>
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+                <span className="material-symbols-outlined">favorite</span>
               </button>
+            </div>
+            <h3 className="font-h2 text-[1.25rem] mb-sm">
+              Arsitek Backend Python
+            </h3>
+            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
+              Instruksi sistem ahli untuk membuat boilerplate FastAPI yang
+              skalabel dengan autentikasi terintegrasi.
+            </p>
+            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
+              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
+                Sistem: Anda adalah Senior DevOps Engineer spesialis
+                Kubernetes...
+              </pre>
+              <button
+                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
+                onClick={copyPrompt}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  content_copy
+                </span>
+              </button>
+            </div>
+            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
+              <div className="flex items-center gap-sm">
+                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-secondary-fixed overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover"
+                    alt="Avatar"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0UzNwT9sSDPPJ2DXiI1TLFFMLvRmO2X625hbjo-QTVXrFPXKbwjHTspev-iQmAHE1dVymWS0Q1awXz8FILjxBZRSCCL5VqOayOfO_Ws9Ej-IuFnk7tAvhG3KpEdD3eveRWozDPBjvzwJR02jdApQfvkFKhgBVJZYJPVKAMRrJenQ3bHDiwsYGXfmExZIJbNNL93txd10Y14QrNahUqF5VMkaek0O5QRqMUaT6Lof1m1TSyXNll8TMXw"
+                  />
+                </div>
+                <span className="font-label-sm text-sm">@code_wizard</span>
+              </div>
+              <span className="font-h2 text-xl">Rp190rb</span>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-700 opacity-100">
+            <div className="flex justify-between items-start mb-md">
+              <span className="bg-badge-orange border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
+                DALL-E 3
+              </span>
+              <button className="text-on-surface-variant hover:text-primary cursor-pointer">
+                <span className="material-symbols-outlined">favorite</span>
+              </button>
+            </div>
+            <h3 className="font-h2 text-[1.25rem] mb-sm">
+              Set Ikon Neubrutalis
+            </h3>
+            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
+              Hasilkan ikon dengan kontras tinggi yang konsisten untuk proyek
+              desain UI web dan mobile.
+            </p>
+            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
+              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
+                Hasilkan ikon gaya vektor roket melayang, garis hitam tebal...
+              </pre>
+              <button
+                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
+                onClick={copyPrompt}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  content_copy
+                </span>
+              </button>
+            </div>
+            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
+              <div className="flex items-center gap-sm">
+                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-cyan overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover"
+                    alt="Avatar"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1k4JUfyNiGM8FCx7QnYr4e3EZkDwbGen2lkvwc1ZJhGNIOx5X8cBagnvJsRtgJzJRoZvIZ45aoDehZlPoJNgRX_wlRQsYneUGf9IthTe7frISyzd-RMJ1La6x0Jo5XWbFVvmLjBUZVrO-Obh8NjUjzkgS140F4gd9joZp5u4wFm0V22ogRDPcjKm6X81DEvA8_SahnnmYhSBB_aGqj2WnnAlNXMNJnQty-tTOv-v6VsmxRJUX8FK2mw"
+                  />
+                </div>
+                <span className="font-label-sm text-sm">@vector_vibe</span>
+              </div>
+              <span className="font-h2 text-xl">Rp120rb</span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Prompt Grid */}
-      <section className="px-margin-mobile md:px-margin-desktop py-xl reveal">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-          {promptCards.map((card) => (
-            <div
-              key={card.title}
-              className="group relative bg-white border-[3px] border-black dark:border-white rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] neubrutal-card-hover transition-all cursor-pointer"
-              onClick={() => openModal(card.title, card.fullPrompt)}
-            >
-              {card.featured && (
-                <div className="absolute -top-4 -right-2 bg-error text-white font-label-sm px-sm py-xs border-[3px] border-black dark:border-white rounded-lg animate-float z-10">
-                  FEATURED!
-                </div>
-              )}
-              <div className="flex items-center justify-between mb-md">
-                <span
-                  className={`px-sm py-1 ${card.modelClass} border-[2px] border-black dark:border-white rounded-full font-label-sm text-[12px]`}
-                >
-                  {card.model}
-                </span>
-                <span className="font-headline-lg-mobile text-primary dark:text-primary-container">
-                  {card.price}
-                </span>
-              </div>
-              <h3 className="font-h2 text-h2 mb-sm text-[24px]">{card.title}</h3>
-              <p className="font-body-md text-on-surface-variant line-clamp-2 mb-md">
-                {card.description}
-              </p>
-              <div className="bg-surface-container dark:bg-surface-dim rounded-lg border-[2px] border-black dark:border-white p-md mb-md font-mono text-[13px] text-on-surface opacity-75 overflow-hidden">
-                {card.preview}
-              </div>
-              <div className="flex items-center justify-between mt-auto">
-                <div className="flex items-center gap-xs">
-                  <img
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full border-2 border-black dark:border-white"
-                    src={card.avatar}
-                  />
-                  <span className="font-label-sm text-[12px]">{card.author}</span>
-                </div>
-                <div className="flex items-center gap-sm">
-                  {card.rating && (
-                    <div className="flex items-center text-secondary dark:text-secondary-fixed font-bold">
-                      <span className="material-symbols-outlined text-[18px]">
-                        star
-                      </span>
-                      <span className="ml-1">{card.rating}</span>
-                    </div>
-                  )}
-                  {card.copies && (
-                    <div className="flex items-center text-on-surface-variant font-medium">
-                      <span className="material-symbols-outlined text-[18px]">
-                        content_copy
-                      </span>
-                      <span className="ml-1">{card.copies}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-xl flex justify-center">
-          <button className="bg-surface dark:bg-surface-bright border-[3px] border-black dark:border-white px-xl py-md rounded-full font-headline-lg-mobile shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:bg-primary-container transition-all neubrutal-btn-hover click-press">
-            Load More Prompts
+        <div className="mt-2xl flex justify-center">
+          <button className="bg-surface border-[3px] border-black px-xl py-md rounded-full font-h2 text-[1.5rem] shadow-brutal hover-lift active-press cursor-pointer">
+            Lihat Semua Prompt
           </button>
         </div>
       </section>
 
-      {/* Value Prop Section */}
-      <section className="my-2xl px-margin-mobile md:px-margin-desktop reveal">
-        <div className="max-w-7xl mx-auto bg-tertiary border-[4px] border-black dark:border-white rounded-[32px] p-xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.2)] relative overflow-hidden flex flex-col md:flex-row items-center gap-xl">
-          <div className="flex-1 text-white relative z-10">
-            <h2 className="font-headline-xl text-headline-xl-mobile md:text-headline-lg text-white mb-lg">
-              10,000+ Curated <br /> AI Prompts
-            </h2>
-            <p className="font-body-md text-body-md text-tertiary-fixed mb-xl max-w-lg">
-              We manually vet every single prompt submitted to our vault. No
-              spam, no fluff, just high-quality results for your creative and
-              professional workflows.
-            </p>
-            <button className="bg-secondary-container text-on-secondary-container font-headline-lg-mobile px-xl py-md rounded-full border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all click-press">
-              Browse All Vaults
-            </button>
+      {/* Story Section */}
+      <section className="bg-accent-purple py-[120px] px-margin-mobile md:px-margin-desktop overflow-hidden relative">
+        <div className="absolute top-20 left-20 w-32 h-32 border-[3px] border-white/20 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-48 h-48 border-[3px] border-white/20 rounded-lg rotate-12"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="font-h1 text-h1 text-surface mb-lg font-black">
+            10.000+ Prompt AI Terkurasi untuk{' '}
+            <span className="text-secondary-fixed">Kreator</span> &amp; Engineer
+          </h2>
+          <p className="text-xl text-surface/90 mb-2xl">
+            Kami menjembatani celah antara kreativitas manusia dan kecerdasan
+            mesin. Vault berbasis komunitas kami memastikan Anda tidak pernah
+            memulai dengan layar kosong lagi.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
+            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+              <div className="font-h1 text-[3rem] text-surface mb-xs">
+                50rb+
+              </div>
+              <div className="text-surface/80 font-label-sm">Pengguna</div>
+            </div>
+            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+              <div className="font-h1 text-[3rem] text-surface mb-xs">12Jt</div>
+              <div className="text-surface/80 font-label-sm">Generasi</div>
+            </div>
+            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+              <div className="font-h1 text-[3rem] text-surface mb-xs">99%</div>
+              <div className="text-surface/80 font-label-sm">Keberhasilan</div>
+            </div>
+            <div className="bg-surface/10 backdrop-blur-md border-[2px] border-surface/30 p-lg rounded-xl">
+              <div className="font-h1 text-[3rem] text-surface mb-xs">$450rb</div>
+              <div className="text-surface/80 font-label-sm">
+                Dibayar ke Penulis
+              </div>
+            </div>
           </div>
-          <div className="flex-1 relative h-64 md:h-96 w-full opacity-50 dark:opacity-20"></div>
         </div>
       </section>
 
-      {/* Marquee */}
-      <div className="w-full bg-secondary py-4 border-y-[4px] border-black dark:border-white rotate-[-1deg] marquee overflow-hidden">
-        <div className="marquee-content font-headline-lg-mobile text-white uppercase flex gap-xl items-center">
-          <span>★ Fresh Prompts Daily ★</span>
-          <span>Midjourney V6 ★</span>
-          <span>ChatGPT-4 ★</span>
-          <span>Claude 3.5 ★</span>
-          <span>Stable Diffusion ★</span>
-          <span>No More Hallucinations ★</span>
-          <span>★ Fresh Prompts Daily ★</span>
-          <span>Midjourney V6 ★</span>
-          <span>ChatGPT-4 ★</span>
-          <span>Claude 3.5 ★</span>
-          <span>Stable Diffusion ★</span>
-          <span>No More Hallucinations ★</span>
-        </div>
-      </div>
-
       {/* FAQ Section */}
-      <section className="py-2xl px-margin-mobile md:px-margin-desktop bg-surface-container-low reveal">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-headline-lg text-center mb-xl">
-            Common Questions
-          </h2>
-          <div className="space-y-lg">
-            {[
-              {
-                question: 'How do I get access to the prompts?',
-                answer:
-                  'Once you purchase a prompt or a vault subscription, you get instant access to the prompt strings, parameters, and negative prompt fields in your dashboard.',
-              },
-              {
-                question: 'Can I sell my own prompts here?',
-                answer:
-                  'Yes! Apply to be a Creator. We offer the highest commission rates in the industry at 85% per sale.',
-              },
-            ].map((item, index) => (
-              <div
-                key={item.question}
-                className="bg-white dark:bg-surface-bright border-[3px] border-black dark:border-white rounded-xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
+      <section className="py-2xl px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto w-full">
+        <h2 className="font-h1 text-h2 text-center mb-2xl font-black">
+          Pertanyaan Umum
+        </h2>
+        <div className="space-y-md">
+          {[
+            {
+              q: 'Bagaimana cara menggunakan prompt-nya?',
+              a: 'Setelah Anda membeli atau menyalin prompt, cukup tempelkan ke antarmuka AI yang diinginkan (ChatGPT, Midjourney Discord, dll.). Beberapa prompt menyertakan parameter khusus yang dapat Anda sesuaikan untuk hasil kustom.',
+            },
+            {
+              q: 'Bisakah saya menjual prompt saya sendiri?',
+              a: "Ya! Kreator dapat mendaftar ke program 'Vault Guardian' kami untuk mendaftarkan prompt mereka. Kami meninjau semua kiriman untuk kualitas dan konsistensi sebelum ditayangkan di marketplace.",
+            },
+            {
+              q: 'Apakah ada model langganan?',
+              a: "Kami menawarkan model bayar-per-prompt dan akses 'Unlimited Vault' untuk pengguna Pro. Pengguna Pro mendapatkan akses awal ke prompt yang sedang tren dan koleksi pribadi.",
+            },
+          ].map((faq, index) => (
+            <div
+              key={faq.q}
+              className={`accordion-item bg-surface border-[3px] border-black rounded-xl overflow-hidden shadow-brutal transition-all ${
+                accordionOpen === index ? 'active' : ''
+              }`}
+            >
+              <button
+                className="w-full flex items-center justify-between p-lg text-left cursor-pointer"
+                onClick={() => toggleAccordion(index)}
               >
-                <button
-                  className="w-full flex items-center justify-between p-lg text-left font-headline-lg-mobile hover:bg-surface-container transition-all"
-                  onClick={() => toggleFaq(index)}
-                >
-                  <span>{item.question}</span>
-                  <span
-                    className={`material-symbols-outlined transform transition-transform ${
-                      faqOpen[index] ? 'rotate-180' : ''
-                    }`}
-                  >
-                    expand_more
-                  </span>
-                </button>
-                <div
-                  className={`faq-content p-lg pt-0 font-body-md border-t-[3px] border-black dark:border-white ${
-                    faqOpen[index] ? 'block' : 'hidden'
-                  }`}
-                >
-                  {item.answer}
-                </div>
+                <span className="font-h2 text-[1.25rem]">{faq.q}</span>
+                <span className="material-symbols-outlined icon-rotate transition-transform">
+                  expand_more
+                </span>
+              </button>
+              <div className="accordion-content px-lg">
+                <p className="text-body-md text-on-surface-variant">{faq.a}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Newsletter */}
-      <section className="py-2xl px-margin-mobile md:px-margin-desktop reveal">
-        <div className="max-w-5xl mx-auto bg-primary-container border-[4px] border-black dark:border-white rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
-          <div className="text-center md:text-left">
-            <h2 className="font-headline-lg-mobile md:text-headline-lg text-on-primary-container mb-sm">
-              Level up your AI game
+      <section className="pb-2xl px-margin-mobile md:px-margin-desktop">
+        <div className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl shadow-brutal-lg flex flex-col md:flex-row items-center justify-between gap-xl">
+          <div className="max-w-md">
+            <h2 className="font-h1 text-[2.5rem] mb-md leading-tight font-black">
+              Bergabung dengan Inner Circle
             </h2>
-            <p className="font-body-md text-on-primary-container/80">
-              Get the weekly Top 10 prompts delivered to your inbox.
+            <p className="text-lg text-on-primary-container/80">
+              Dapatkan 'Prompt Digest' mingguan dengan 5 prompt berkualitas
+              tinggi gratis yang dikirim ke kotak masuk Anda.
             </p>
           </div>
-          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-md">
+          <div className="flex flex-col sm:flex-row w-full max-w-lg gap-md">
             <input
-              className="bg-white dark:bg-surface-bright border-[3px] border-black dark:border-white rounded-full px-lg py-md font-body-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none flex-grow"
-              placeholder="you@example.com"
+              className="flex-1 bg-surface border-[3px] border-black rounded-full px-lg py-md shadow-brutal focus:ring-0 focus:outline-none font-label-sm"
+              placeholder="master_prompt@email.com"
               type="email"
             />
-            <button className="bg-black dark:bg-white text-white dark:text-black px-lg py-md rounded-full font-label-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all click-press">
-              Subscribe Now
+            <button className="bg-on-background text-surface px-xl py-md rounded-full font-h2 text-xl shadow-brutal hover-lift active-press whitespace-nowrap cursor-pointer">
+              Berlangganan
             </button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-surface-container dark:bg-surface-bright border-t-[3px] border-black dark:border-white py-xl px-margin-mobile md:px-margin-desktop">
-        <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <div className="flex -space-x-4 mb-xl">
-            <img
-              alt="User 1"
-              className="w-16 h-16 rounded-full border-4 border-black dark:border-white bg-secondary-container"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWf9xD54hX4su0etf73yL19Xmq8YPjVOPnMkdh6eLzM5Ie0Pr1Ksbj3gnDLOTgj_LkiqjMickSMERfVk6r3gQgYK27h1IahxaS_x5qXKCeP4PlLXzud1cYmI6zx0aF2Ly_RiYf_L1B4hEkw2cZdZ4FgXE4aPYy2UKe1q0SnVkX-HhuWsHLimbEMfe5YG0bSYNqbjkPdXJBD624Fm8IoB-9vMOHql4h1-UtQgB1D283EUmHpUrne_nD"
-            />
-            <img
-              alt="User 2"
-              className="w-16 h-16 rounded-full border-4 border-black dark:border-white bg-primary-container"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuACro0uAzsdIOhgYqN-c1wiFjXLIfs56WDZIOpnMTzD6lJrPY81M9k7rdcwv57ERHGnXimYcgV_UDhtYZ_eAYJQX9XoS2xWL49Ilip7fDKnRD_ePwnTuTFZg8wc3POXa1BMZgyJk-YzoueXvTia9_aS4GkzZwGqj-Yz5MPRXuK_rFYnuXwe0PeH7ziW4feSoyMQl-dFqJ2OaMrlDZabDatMR9IdtgMIOEYHTwKoCAzlR5wYStLycrln"
-            />
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
+          <div className="col-span-1 md:col-span-2">
+            <Link
+              to="/"
+              className="font-headline-lg text-h2 font-black text-on-surface mb-md font-headline-xl block"
+            >
+              PromptVault
+            </Link>
+            <p className="text-on-surface-variant max-w-sm mb-lg">
+              Dibuat untuk para kreatif, pembangun, dan penggemar AI. Mengkurasi
+              masa depan kecerdasan generatif.
+            </p>
+            <div className="flex gap-md">
+              <a
+                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                href="#"
+              >
+                <span className="material-symbols-outlined">
+                  swap_horizontal_circle
+                </span>
+              </a>
+              <a
+                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                href="#"
+              >
+                <span className="material-symbols-outlined">
+                  alternate_email
+                </span>
+              </a>
+              <a
+                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                href="#"
+              >
+                <span className="material-symbols-outlined">public</span>
+              </a>
+            </div>
           </div>
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-lg pt-lg border-t-2 border-black/10 dark:border-white/10">
-            <div className="flex flex-col items-center md:items-start gap-sm">
-              <span className="font-headline-lg-mobile text-headline-lg-mobile font-black text-on-surface uppercase italic">
-                PromptVault
-              </span>
-              <p className="font-body-md text-on-surface-variant text-center md:text-left">
-                © 2024 PromptVault AI. Built for the curious.
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-lg">
-              <a
-                className="font-body-md text-on-surface hover:text-primary transition-colors"
-                href="#"
-              >
-                Twitter
-              </a>
-              <a
-                className="font-body-md text-on-surface hover:text-primary transition-colors"
-                href="#"
-              >
-                Discord
-              </a>
-              <a
-                className="font-body-md text-on-surface hover:text-primary transition-colors"
-                href="#"
-              >
-                Docs
-              </a>
-            </div>
+          <div>
+            <h4 className="font-headline-lg text-xl mb-lg">Pasar</h4>
+            <ul className="space-y-sm">
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Prompt Populer
+                </a>
+              </li>
+              <li>
+                <Link
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  to="/"
+                >
+                  Model
+                </Link>
+              </li>
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Kategori
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Program Penulis
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-headline-lg text-xl mb-lg">Legal</h4>
+            <ul className="space-y-sm">
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Ketentuan Layanan
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Kebijakan Privasi
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Lisensi
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors"
+                  href="#"
+                >
+                  Kebijakan Pengembalian
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto mt-2xl pt-lg border-t-[2px] border-black/10 flex flex-col md:flex-row justify-between items-center gap-md">
+          <p className="text-on-surface-variant text-sm">
+            © 2024 PromptVault AI. Didesain untuk Kreator.
+          </p>
+          <div className="flex items-center gap-md">
+            <span className="bg-secondary-fixed border-[2px] border-black px-md py-xs rounded-full text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              STATUS SISTEM: ONLINE
+            </span>
           </div>
         </div>
       </footer>
 
-      {/* Modal Drawer */}
-      <div
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] ${
-          modal.open ? 'flex' : 'hidden'
-        } items-center justify-center p-md transition-all duration-300`}
-        onClick={closeModal}
-      >
-        <div
-          className="bg-white dark:bg-surface-bright border-[4px] border-black dark:border-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.2)] flex flex-col"
-          onClick={(e) => e.stopPropagation()}
+      {/* BottomNavBar (Mobile Only) */}
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex justify-around items-center px-4 py-3 bg-surface border-[3px] border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-full">
+        <Link
+          className="flex flex-col items-center justify-center text-primary"
+          to="/"
         >
-          <div className="p-lg border-b-[3px] border-black dark:border-white bg-primary-container dark:bg-primary flex justify-between items-center">
-            <h3 className="font-headline-lg-mobile text-on-primary-container dark:text-white">
-              {modal.title || 'Prompt Details'}
-            </h3>
-            <button
-              className="w-10 h-10 border-[3px] border-black dark:border-white rounded-full bg-white dark:bg-surface-bright flex items-center justify-center hover:bg-error hover:text-white transition-colors"
-              onClick={closeModal}
-              aria-label="Close modal"
-            >
-              <span className="material-symbols-outlined">close</span>
-            </button>
-          </div>
-          <div className="p-lg overflow-y-auto">
-            <div className="mb-lg">
-              <label className="font-label-sm text-[12px] uppercase opacity-60 mb-xs block">
-                Model Configuration
-              </label>
-              <div className="flex gap-sm">
-                <span className="px-sm py-1 bg-surface-container-highest dark:bg-surface-dim border-[2px] border-black dark:border-white rounded-lg font-mono text-[13px]">
-                  GPT-4-Turbo
-                </span>
-              </div>
-            </div>
-            <div className="mb-lg">
-              <label className="font-label-sm text-[12px] uppercase opacity-60 mb-xs block">
-                The Prompt
-              </label>
-              <div className="relative group">
-                <pre className="bg-surface-container dark:bg-surface-dim border-[3px] border-black dark:border-white rounded-xl p-lg font-mono text-body-md whitespace-pre-wrap break-words min-h-[150px]">
-                  {modal.prompt}
-                </pre>
-                <button
-                  className="absolute top-4 right-4 bg-white dark:bg-surface-bright border-[2px] border-black dark:border-white p-2 rounded-lg hover:bg-secondary hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 click-press"
-                  onClick={copyToClipboard}
-                  aria-label="Copy prompt"
-                >
-                  <span className="material-symbols-outlined">
-                    content_copy
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="p-lg bg-surface-container dark:bg-surface-dim border-t-[3px] border-black dark:border-white flex justify-between items-center">
-            <button className="bg-black dark:bg-white text-white dark:text-black px-xl py-md rounded-full font-label-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all click-press">
-              Unlock Full Parameters
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Toast Notification */}
-      <div
-        className={`fixed bottom-lg left-1/2 -translate-x-1/2 bg-secondary text-white border-[3px] border-black dark:border-white px-xl py-md rounded-full shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transform translate-y-32 transition-all duration-300 z-[110] font-label-sm flex items-center gap-sm ${
-          toastVisible
-            ? 'translate-y-0 opacity-100'
-            : 'translate-y-32 opacity-0 pointer-events-none'
-        }`}
-      >
-        <span className="material-symbols-outlined">check_circle</span>
-        Prompt copied to clipboard!
-      </div>
+          <span className="material-symbols-outlined">home</span>
+          <span className="font-label-sm text-[10px]">Beranda</span>
+        </Link>
+        <Link
+          className="flex flex-col items-center justify-center text-on-surface-variant"
+          to="/favorites"
+        >
+          <span className="material-symbols-outlined">favorite</span>
+          <span className="font-label-sm text-[10px]">Favorit</span>
+        </Link>
+        <Link
+          className="flex flex-col items-center justify-center text-on-surface-variant"
+          to="/about"
+        >
+          <span className="material-symbols-outlined">info</span>
+          <span className="font-label-sm text-[10px]">Tentang</span>
+        </Link>
+      </nav>
     </div>
   );
 }

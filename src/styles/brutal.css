@@ -1,0 +1,167 @@
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.filled-icon {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Neubrutalist Custom Shadow Classes */
+.shadow-brutal-sm {
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.shadow-brutal {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.shadow-brutal-lg {
+  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+/* Interaction States */
+.hover-lift:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.active-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: fit-content;
+  animation: marquee 20s linear infinite;
+}
+
+/* Accordion Custom Logic */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease;
+}
+
+.accordion-item.active .accordion-content {
+  max-height: 200px;
+  padding-bottom: 24px;
+}
+
+.accordion-item.active .icon-rotate {
+  transform: rotate(180deg);
+}
+
+/* Submit/Favorites/About Neubrutalist Styles */
+.neubrutalist-card {
+  background: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  border-radius: 16px;
+}
+
+.neubrutalist-button {
+  border: 2.5px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.1s ease;
+}
+
+.neubrutalist-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px #000000;
+}
+
+.neubrutalist-input {
+  border: 2.5px solid #000;
+  transition: all 0.2s ease;
+}
+
+.neubrutalist-input:focus {
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  outline: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #eadfe8;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #84439b;
+  border-radius: 4px;
+}
+
+/* Body background for pages using Indonesian design */
+.bg-background {
+  background-color: #F3EAE3;
+}
+
+.text-on-background {
+  color: #1f1a20;
+}
+
+/* Dark mode support for neubrutalist styles */
+.dark .neubrutalist-card {
+  background: #262626;
+  border-color: white;
+  box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .neubrutalist-button {
+  border-color: white;
+  box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .neubrutalist-button:active {
+  box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .neubrutalist-input {
+  border-color: white;
+}
+
+.dark .neubrutalist-input:focus {
+  box-shadow: 2px 2px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #1f1a20;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e89fff;
+}
+
+.dark .shadow-brutal-sm {
+  box-shadow: 2px 2px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .shadow-brutal {
+  box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .shadow-brutal-lg {
+  box-shadow: 8px 8px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 6px 6px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+.dark .active-press:active {
+  box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.2);
+}
