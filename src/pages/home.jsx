@@ -713,7 +713,7 @@ function Home() {
         </div>
         <div className="max-w-7xl mx-auto mt-2xl pt-lg border-t-[2px] border-black/10 flex flex-col md:flex-row justify-between items-center gap-md">
           <p className="text-on-surface-variant text-sm">
-            © 2024 PromptVault AI. Didesain untuk Kreator.
+            © 2026 PromptVault AI.
           </p>
           <div className="flex items-center gap-md">
             <span className="bg-secondary-fixed border-[2px] border-black px-md py-xs rounded-full text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">

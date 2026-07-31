@@ -211,7 +211,7 @@ function AllPrompt() {
       <footer className="bg-surface-container-highest border-t-[3px] border-black py-xl px-margin-mobile md:px-margin-desktop mt-2xl">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
           <p className="text-on-surface-variant text-sm">
-            © 2024 PromptVault AI. Semua hak cipta dilindungi.
+            © 2026 PromptVault AI
           </p>
           <Link
             to="/about"
