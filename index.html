@@ -4,7 +4,109 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ai-prompt-library</title>
+    <title>PromptVault | Unlock the Best AI Prompts</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#eae1da",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "background": "#fff8f4",
+                    "tertiary-fixed-dim": "#c7bfff",
+                    "on-surface-variant": "#4e434f",
+                    "primary-fixed-dim": "#eeb1ff",
+                    "on-error": "#ffffff",
+                    "border-bold": "#000000",
+                    "surface-bright": "#fff8f4",
+                    "primary": "#84439b",
+                    "primary-container": "#e89fff",
+                    "inverse-primary": "#eeb1ff",
+                    "secondary-container": "#b2f1c2",
+                    "on-secondary-container": "#35704a",
+                    "on-tertiary-fixed": "#170065",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#fbf2eb",
+                    "surface-container": "#f5ece5",
+                    "on-secondary-fixed": "#00210e",
+                    "shadow-hard": "#000000",
+                    "inverse-surface": "#34302b",
+                    "surface-dim": "#e1d8d2",
+                    "on-primary-fixed": "#330045",
+                    "outline-variant": "#d1c2d0",
+                    "tertiary-fixed": "#e4dfff",
+                    "secondary": "#2f6a45",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#84439b",
+                    "text-primary": "#000000",
+                    "on-surface": "#1f1b17",
+                    "primary-fixed": "#f9d8ff",
+                    "inverse-on-surface": "#f8efe8",
+                    "surface-variant": "#eae1da",
+                    "tertiary-container": "#b9b1ff",
+                    "secondary-fixed-dim": "#97d4a7",
+                    "on-tertiary-fixed-variant": "#412bb6",
+                    "tertiary": "#5948ce",
+                    "on-primary-container": "#6d2d85",
+                    "on-background": "#1f1b17",
+                    "surface": "#FFFFFF",
+                    "on-primary-fixed-variant": "#692981",
+                    "on-secondary-fixed-variant": "#13512f",
+                    "error-container": "#ffdad6",
+                    "outline": "#7f7380",
+                    "on-tertiary-container": "#4430b9",
+                    "surface-container-high": "#efe7e0",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#b2f1c2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "margin-desktop": "48px",
+                    "2xl": "80px",
+                    "margin-mobile": "16px",
+                    "md": "16px",
+                    "gutter": "24px",
+                    "xl": "48px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "h2": ["Plus Jakarta Sans"],
+                    "h1": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-xl-mobile": ["Plus Jakarta Sans"],
+                    "label-sm": ["Inter"],
+                    "mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "h2": ["2.5rem", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "h1": ["4rem", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["1rem", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-xl-mobile": ["40px", {"lineHeight": "1.1", "fontWeight": "800"}],
+                    "label-sm": ["0.875rem", {"lineHeight": "1.4", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
