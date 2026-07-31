@@ -130,45 +130,6 @@ function Home() {
         </span>
       </div>
 
-      {/* Navigation */}
-      <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
-          <div className="flex justify-start">
-            <Link
-              to="/"
-              className="font-headline-lg text-2xl font-black text-text-primary font-headline-xl"
-            >
-              PromptVault
-            </Link>
-          </div>
-          <nav className="hidden md:flex justify-center gap-lg">
-            <Link
-              to="/"
-              className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
-            >
-              Beranda
-            </Link>
-            <Link
-              to="/favorites"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Favorit
-            </Link>
-            <Link
-              to="/about"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Tentang
-            </Link>
-          </nav>
-          <div className="flex justify-end">
-            <button className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center">
-              <span className="material-symbols-outlined">menu</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -177,7 +138,7 @@ function Home() {
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-xl items-center">
           <div className="relative z-10">
             <div className="hero-badge inline-block bg-badge-cyan border-[2px] border-black rounded-full px-md py-xs font-label-sm text-label-sm shadow-brutal-sm mb-md">
-              ⚡ Baru: Prompt Optimal untuk GPT-4o
+              SELAMAT DATANG DI PROMPTVAULT!!
             </div>
             <h1 className="hero-title font-h1 text-h1 mb-lg leading-[1.05] font-black">
               Akses <span className="text-primary italic">Prompt AI</span> Terbaik
@@ -703,33 +664,8 @@ function Home() {
             </span>
           </div>
         </div>
-      </footer>
-
-      {/* BottomNavBar (Mobile Only) */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50 flex justify-around items-center px-4 py-3 bg-surface border-[3px] border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-full">
-        <Link
-          className="flex flex-col items-center justify-center text-primary"
-          to="/"
-        >
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-label-sm text-[10px]">Beranda</span>
-        </Link>
-        <Link
-          className="flex flex-col items-center justify-center text-on-surface-variant"
-          to="/favorites"
-        >
-          <span className="material-symbols-outlined">favorite</span>
-          <span className="font-label-sm text-[10px]">Favorit</span>
-        </Link>
-        <Link
-          className="flex flex-col items-center justify-center text-on-surface-variant"
-          to="/about"
-        >
-          <span className="material-symbols-outlined">info</span>
-          <span className="font-label-sm text-[10px]">Tentang</span>
-        </Link>
-      </nav>
-    </div>
+       </footer>
+     </div>
   );
 }
 

@@ -27,44 +27,6 @@ function Submit() {
 
   return (
     <div className="font-body-md text-body-md bg-[#F3EAE3] text-[#1f1a20] min-h-screen flex flex-col justify-between">
-      {/* TopNavBar */}
-      <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-black rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
-          <div className="flex justify-start">
-            <Link
-              to="/"
-              className="text-2xl font-black text-text-primary font-headline-xl"
-            >
-              PromptVault
-            </Link>
-          </div>
-          <nav className="hidden md:flex justify-center gap-lg">
-            <Link
-              to="/"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Beranda
-            </Link>
-            <Link
-              to="/favorites"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Favorit
-            </Link>
-            <Link
-              to="/about"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Tentang
-            </Link>
-          </nav>
-          <div className="flex justify-end">
-            <button className="md:hidden p-2 border-2 border-black rounded-full bg-surface-variant flex items-center justify-center">
-              <span className="material-symbols-outlined">menu</span>
-            </button>
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-4xl mx-auto px-margin-mobile md:px-0 py-2xl flex-grow w-full">
         {/* Hero Section */}

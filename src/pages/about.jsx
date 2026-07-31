@@ -1,46 +1,9 @@
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 function About() {
   return (
     <div className="font-body-md overflow-x-hidden bg-[#F3EAE3] text-[#000000] min-h-screen flex flex-col justify-between">
-      {/* TopNavBar */}
-      <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-        <div className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
-          <div className="flex justify-start">
-            <Link
-              to="/"
-              className="font-headline-lg text-2xl font-black text-text-primary"
-            >
-              PromptVault
-            </Link>
-          </div>
-          <nav className="hidden md:flex justify-center gap-lg">
-            <Link
-              to="/"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Beranda
-            </Link>
-            <Link
-              to="/favorites"
-              className="font-bold text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Favorit
-            </Link>
-            <Link
-              to="/about"
-              className="font-bold text-primary border-b-[3px] border-primary pb-0.5"
-            >
-              Tentang
-            </Link>
-          </nav>
-          <div className="flex justify-end">
-            <button className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center">
-              <span className="material-symbols-outlined">menu</span>
-            </button>
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl space-y-2xl flex-grow w-full">
         {/* Hero Section */}
@@ -387,33 +350,8 @@ function About() {
             </span>
           </div>
         </div>
-      </footer>
-
-      {/* BottomNavBar (Mobile Only) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface border-t-[3px] border-border shadow-[0px_-4px_0px_0px_rgba(0,0,0,1)]">
-        <Link
-          className="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"
-          to="/"
-        >
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-label-sm text-label-sm">Beranda</span>
-        </Link>
-        <Link
-          className="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"
-          to="/favorites"
-        >
-          <span className="material-symbols-outlined">favorite</span>
-          <span className="font-label-sm text-label-sm">Favorit</span>
-        </Link>
-        <Link
-          className="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          to="/about"
-        >
-          <span className="material-symbols-outlined">info</span>
-          <span className="font-label-sm text-label-sm">Tentang</span>
-        </Link>
-      </nav>
-    </div>
+       </footer>
+     </div>
   );
 }
 
