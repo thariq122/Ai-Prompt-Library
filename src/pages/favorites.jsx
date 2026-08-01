@@ -2,65 +2,18 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useFavorites } from '../contexts/FavoritesContext';
+import { allPrompts } from '../data/prompts';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const favoritePrompts = [
-  {
-    id: 1,
-    model: 'GPT-4',
-    modelClass: 'bg-badge-cyan',
-    category: 'Kreatif',
-    categoryClass: 'bg-badge-orange',
-    title: 'Lanskap Cyberpunk Surealis',
-    description: 'Hasilkan metropolis neon yang luas dengan struktur terapung organik dan kabut atmosfer bioluminesensi...',
-    promptText: '/imagine prompt: taman terapung penuh neon di langit neo-tokyo...',
-    author: '@pixel_wizard',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBqqSW4FftwEuczhW__4ZMLmANdZoAmH34XEhCUmZIq4BuetfylQ_KX3h9p6cwDAPmz-hYY945sR-sav8y97qJEsETfHRx2yewFCtDa_8btAOhRQqVCqqeFbjUqkj_UfxNykB0xWkakyhnuChSp1_hHowHRNmkVl0B9RVFLmiRvAE8vjJ0_v9YvEyxvhGlHZxeU1rZzJnOZyixwIFthrk-2rD6Yzv9CoqWVjxOObjVhNZn3Fsou_X945g',
-  },
-  {
-    id: 2,
-    model: 'Claude 3',
-    modelClass: 'bg-secondary-container',
-    category: 'Analisis',
-    categoryClass: 'bg-surface-container-highest',
-    title: 'Pemecah Logika Kompleks',
-    description: 'Pendekatan struktural untuk memecahkan paradoks matematika dan logika multi-langkah dengan penalaran tahap demi tahap yang jelas...',
-    promptText: 'Analisis paradoks berikut melalui kacamata logika formal...',
-    author: '@logic_lord',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAIVjw3r5hDuozC-gaAMZI3ENvuLnLnC2mu7RfE3ETsMB_bJYFLahulOlZNcqPOwyBVXY7fQGvQYastqLJF0fCYtVGAuuht8BL_Xy0KFaBpcvEeTH2RA8ru-jh0CJwkBx5lklvHQmMri6CDfFFwOHuM_nXf2Ru0rHclK5HP4aUH1bDEJ_nE4ID8OM6rleoFgCC5U34e50EK1ttQrd41LnNPZJUk_qYYIuLk6uzHPuiz1VD9b7qubTnwUA',
-  },
-  {
-    id: 3,
-    model: 'Midjourney',
-    modelClass: 'bg-primary-container',
-    category: 'Seni',
-    categoryClass: 'bg-badge-cyan',
-    title: 'Estetika Poster Vintage',
-    description: 'Buat tata letak tipografi Gaya Swiss tahun 1960-an dengan tekstur grainy, blok warna datar, dan set ikon minimalis...',
-    promptText: 'desain grafis 1960-an, gaya internasional Swiss, warna primer...',
-    author: '@retro_guru',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDg7K7Bu6Y4JZiYimvYdThHXPe1rWn6s6Z4LasbSf3NF-5cioVNnqbqNRfmJjSTyffGHeO00Q0M63aKjTiMQKnnY3xl-IHRwI3eoLm3gUZ1Ns2jiaTfxEJQOkf8OJiv6Pv__fdWOVlSMV-Ks_cbL9ti9OQPoy7RKCn8hyBSvH2V_KiQ0Hcd5pNgTKOimND0fK7NtTi1NJRrCGyvvHkBZEO7FKGcS4D6J6hQLdAVNkjk_8TEy9dpKJwEcA',
-  },
-  {
-    id: 4,
-    model: 'Stable Diffusion',
-    modelClass: 'bg-secondary-container',
-    category: '',
-    categoryClass: '',
-    title: 'Desain Ruang Isometrik',
-    description: 'Ruang isometrik 3D detail dengan pencahayaan nyaman, detail rumit, dan estetika clay-render yang lembut...',
-    promptText: 'ruang gaming low-poly isometrik, octane render, pencahayaan global lembut...',
-    author: '@iso_master',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcDyeTCZHgvMGVRIb_xk7AvgJRC0AnWrjH4lQmw62oBPKmVenJH8g0qD2QzskftHYe3L1J0sJDUj92tsGe20naqnAfxUdpZI0m1W5unJmXsl4tWbbHJ8gxsCo9h7V5M4zkdfiwtqN-DycEJUoHpCNITPH6GGDic-oJ5t5ZwjNR4V2s6UmxvsNHFSy50TRhSJTYtiSlPz6uZpMG-B486i3jnFjyVBU_zf8ca5jFJpFu2LEm6tm9SGgC5A',
-  },
-];
-
 function Favorites() {
   const containerRef = useRef(null);
+  const [search, setSearch] = useState('');
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [copied, setCopied] = useState(false);
   const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+  const { favoriteIds, toggleFavorite, isFavorite } = useFavorites();
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -68,87 +21,25 @@ function Favorites() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const favoritedPrompts = allPrompts.filter((p) => {
+    const isFav = favoriteIds.includes(p.id);
+    const matchSearch =
+      search === '' ||
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.description.toLowerCase().includes(search.toLowerCase()) ||
+      p.author.toLowerCase().includes(search.toLowerCase()) ||
+      p.model.toLowerCase().includes(search.toLowerCase());
+    return isFav && matchSearch;
+  });
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero section entrance animation (stagger children)
       gsap.from('.favorites-hero > *', {
         y: 40,
         opacity: 0,
         duration: 0.8,
         stagger: 0.15,
-        ease: 'power3.out'
-      });
-
-      // Fav cards: alternating left/right with stagger & bounce
-      const favCards = gsap.utils.toArray('.favorite-card');
-      favCards.forEach((card, i) => {
-        const direction = i % 2 === 0 ? -1 : 1;
-        gsap.from(card, {
-          x: direction * 80,
-          opacity: 0,
-          duration: 0.9,
-          ease: 'back.out(1.5)',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
-          }
-        });
-      });
-
-      // Featured card (bento) — slides in from the right
-      gsap.from('.featured-card', {
-        x: 80,
-        y: 30,
-        opacity: 0,
-        duration: 0.9,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.featured-card',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-
-      // CTA card — pops in
-      gsap.from('.cta-card', {
-        scale: 0.7,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'elastic.out(1, 0.6)',
-        scrollTrigger: {
-          trigger: '.cta-card',
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-
-      // Footer CTA section
-      gsap.from('.footer-cta > *', {
-        y: 35,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.footer-cta',
-          start: 'top 90%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-
-      // Footer columns stagger in
-      gsap.from('.site-footer > *', {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.12,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.site-footer',
-          start: 'top 90%',
-          toggleActions: 'play none none reverse'
-        }
       });
     }, containerRef);
 
@@ -156,280 +47,143 @@ function Favorites() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3]" ref={containerRef}>
-
+    <div
+      className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3] transition-colors duration-300"
+      ref={containerRef}
+    >
       <main className="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">
-        {/* Hero Section / Title */}
         <div className="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md favorites-hero">
           <div>
             <h1 className="font-headline-xl text-headline-xl-mobile md:text-headline-xl mb-xs font-['Syne'] font-black">
               Favorit Tersimpan Anda
             </h1>
             <div className="inline-block bg-tertiary-container text-on-tertiary-container px-4 py-1 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              12 prompt tersimpan
+              {favoriteIds.length} prompt tersimpan
             </div>
           </div>
-          <div className="flex gap-sm">
-            <div className="relative">
+          <div className="flex gap-sm w-full md:w-auto">
+            <div className="relative w-full md:w-64">
               <input
-                className="bg-surface border-2 border-border rounded-full px-lg py-sm pl-12 focus:ring-0 focus:border-border w-full md:w-64 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+                className="bg-surface border-2 border-border rounded-full px-lg py-sm pl-12 focus:ring-0 focus:border-border w-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
                 placeholder="Cari favorit Anda..."
                 type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
                 search
               </span>
             </div>
           </div>
         </div>
 
-        {/* Favorites Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter favorites-grid">
-          {favoritePrompts.map((item) => (
-            <div
-              key={item.id}
-              onClick={(e) => {
-                setModalPos({ x: e.clientX, y: e.clientY });
-                setSelectedPrompt(item);
-              }}
-              className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card cursor-pointer"
+        {favoritedPrompts.length === 0 ? (
+          <div className="text-center py-2xl bg-surface border-[3px] border-border rounded-xl p-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-lg mx-auto">
+            <span className="material-symbols-outlined text-6xl text-error mb-md block">
+              favorite_border
+            </span>
+            <h3 className="font-headline-lg text-2xl font-bold mb-sm">
+              Belum Ada Favorit
+            </h3>
+            <p className="text-on-surface-variant mb-lg">
+              Anda belum menyimpan prompt apapun ke dalam daftar favorit. Jelajahi repositori dan klik ikon hati untuk menyimpan prompt favorit Anda.
+            </p>
+            <Link
+              to="/allprompt"
+              className="bg-primary text-on-primary px-lg py-md border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all inline-block"
             >
-              <div className="flex justify-between items-start mb-md">
-                <div className="flex gap-sm">
-                  <span className={`${item.modelClass} text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
-                    {item.model}
-                  </span>
-                  {item.category && (
+              Jelajahi Semua Prompt
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter favorites-grid">
+            {favoritedPrompts.map((item) => (
+              <div
+                key={item.id}
+                onClick={(e) => {
+                  setModalPos({ x: e.clientX, y: e.clientY });
+                  setSelectedPrompt(item);
+                }}
+                className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card cursor-pointer"
+              >
+                <div className="flex justify-between items-start mb-md">
+                  <div className="flex gap-sm">
+                    <span className={`${item.modelClass} text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
+                      {item.model}
+                    </span>
                     <span className={`${item.categoryClass} text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
                       {item.category}
                     </span>
-                  )}
-                </div>
-                <button 
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-error active:scale-90 transition-transform"
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontVariationSettings: '"FILL" 1' }}
-                  >
-                    favorite
-                  </span>
-                </button>
-              </div>
-              <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
-                {item.title}
-              </h3>
-              <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
-                {item.description}
-              </p>
-              <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
-                <code className="block text-on-surface-variant">
-                  {item.promptText}
-                </code>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-xs">
-                  <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                    <img
-                      className="w-full h-full object-cover"
-                      alt="Avatar"
-                      src={item.avatar}
-                    />
                   </div>
-                  <span className="text-label-sm font-label-sm">
-                    {item.author}
-                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.id);
+                    }}
+                    className="text-error active:scale-90 transition-transform cursor-pointer"
+                  >
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontVariationSettings: '"FILL" 1' }}
+                    >
+                      favorite
+                    </span>
+                  </button>
                 </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy(item.promptText);
-                  }}
-                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
-                >
-                  Salin
-                </button>
+                <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
+                  {item.description}
+                </p>
+                <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
+                  <code className="block text-on-surface-variant">
+                    {item.promptText}
+                  </code>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-xs">
+                    <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
+                      <img
+                        className="w-full h-full object-cover"
+                        alt="Avatar"
+                        src={item.avatar}
+                      />
+                    </div>
+                    <span className="text-label-sm font-label-sm">
+                      {item.author}
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopy(item.promptText);
+                    }}
+                    className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                  >
+                    {copied ? 'Disalin!' : 'Salin'}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-
-          {/* Browse More CTA Card */}
-          <div className="bg-surface-container border-[3px] border-border border-dashed rounded-xl p-lg flex flex-col items-center justify-center text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group cta-card">
-            <div className="w-16 h-16 bg-primary-container border-2 border-border rounded-full flex items-center justify-center mb-md shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-4xl">add</span>
-            </div>
-            <h3 className="font-headline-lg text-2xl font-bold mb-sm">
-              Ingin lebih banyak?
-            </h3>
-            <p className="text-on-surface-variant mb-lg font-body-md">
-              Jelajahi ribuan prompt premium di pasar kami.
-            </p>
-            <Link
-              to="/"
-              className="bg-surface border-2 border-border px-lg py-sm rounded-full font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all inline-block"
-            >
-              Jelajahi Pasar
-            </Link>
+            ))}
           </div>
-        </div>
+        )}
       </main>
 
-      {/* Footer CTA & Footer */}
-      <section className="pb-2xl px-margin-mobile md:px-margin-desktop footer-cta">
-        <div className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl">
-          <div className="max-w-md">
-            <h2 className="font-h1 text-[2.5rem] mb-md leading-tight font-black font-['Syne']">
-              Gabung ke Inner Circle
-            </h2>
-            <p className="text-lg text-on-primary-container/80">
-              Dapatkan 'Prompt Digest' mingguan dengan 5 prompt fidelitas tinggi
-              gratis ke kotak masuk Anda.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row w-full max-w-lg gap-md">
-            <input
-              className="flex-1 bg-surface border-[3px] border-black rounded-full px-lg py-md focus:ring-0 focus:outline-none font-label-sm"
-              placeholder="prompt_master@email.com"
-              type="email"
-            />
-            <button className="bg-on-background text-surface px-xl py-md rounded-full font-h2 text-xl whitespace-nowrap cursor-pointer">
-              Langganan
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop site-footer">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
-          <div className="col-span-1 md:col-span-2">
-            <Link
-              to="/"
-              className="block font-headline-lg text-h2 font-black text-on-surface mb-md font-['Syne']"
-            >
-              PromptVault
-            </Link>
-            <p className="text-on-surface-variant max-w-sm mb-lg">
-              Dibuat untuk kreatif, pembangun, dan antusias AI. Mengkurasi masa
-              depan kecerdasan generatif.
-            </p>
-            <div className="flex gap-md">
-              <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
-                href="#"
-              >
-                <span className="material-symbols-outlined">
-                  swap_horizontal_circle
-                </span>
-              </a>
-              <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
-                href="#"
-              >
-                <span className="material-symbols-outlined">
-                  alternate_email
-                </span>
-              </a>
-              <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
-                href="#"
-              >
-                <span className="material-symbols-outlined">public</span>
-              </a>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">
-              Pasar
-            </h4>
-            <ul className="space-y-sm">
-              <li>
-                <Link
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  to="/"
-                >
-                  Prompt Populer
-                </Link>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Model
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Kategori
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Program Penulis
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">
-              Legal
-            </h4>
-            <ul className="space-y-sm">
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Ketentuan Layanan
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Kebijakan Privasi
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Lisensi
-                </a>
-              </li>
-              <li>
-                <a
-                  className="text-on-surface-variant hover:text-primary transition-colors"
-                  href="#"
-                >
-                  Kebijakan Pengembalian
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-2xl pt-lg border-t-[2px] border-black/10 flex flex-col md:flex-row justify-between items-center gap-md">
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop site-footer transition-colors duration-300">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
           <p className="text-on-surface-variant text-sm">
             © 2026 PromptVault AI
           </p>
-          <div className="flex items-center gap-md">
-            <span className="bg-secondary-fixed border-[2px] border-black px-md py-xs rounded-full text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              STATUS SISTEM: AKTIF
-            </span>
-          </div>
+          <Link
+            to="/"
+            className="bg-surface border-[2px] border-black px-md py-xs rounded-full text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all inline-block"
+          >
+            Kembali
+          </Link>
         </div>
-       </footer>
+      </footer>
 
-       {/* Modal Overlay */}
       {selectedPrompt && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-50 p-md overflow-y-auto flex items-center justify-center"
@@ -437,25 +191,21 @@ function Favorites() {
         >
           <div
             className="bg-surface border-[3px] border-border rounded-xl p-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full my-auto animate-in fade-in zoom-in-95 duration-200"
-            style={{
-              transformOrigin: `${modalPos.x}px ${modalPos.y}px`
-            }}
+            style={{ transformOrigin: `${modalPos.x}px ${modalPos.y}px` }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-lg">
-              <div>
+              <div className="flex-1">
                 <h2 className="font-headline-xl text-3xl font-black mb-xs">
                   {selectedPrompt.title}
                 </h2>
-                <div className="flex gap-sm">
+                <div className="flex gap-sm flex-wrap">
                   <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     {selectedPrompt.model}
                   </span>
-                  {selectedPrompt.category && (
-                    <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      {selectedPrompt.category}
-                    </span>
-                  )}
+                  <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {selectedPrompt.category}
+                  </span>
                 </div>
               </div>
               <button
@@ -468,50 +218,50 @@ function Favorites() {
 
             <div className="space-y-lg">
               <div>
-                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
-                  Deskripsi
-                </h3>
-                <p className="font-body-md text-on-surface">
-                  {selectedPrompt.description}
-                </p>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">Deskripsi</h3>
+                <p className="font-body-md text-on-surface">{selectedPrompt.description}</p>
               </div>
-
               <div>
-                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
-                  Prompt Text
-                </h3>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">Prompt Text</h3>
                 <div className="bg-surface-container-low border-2 border-border rounded-lg p-md font-code-sm text-code-sm overflow-x-auto">
                   <code className="block text-on-surface-variant whitespace-pre">
                     {selectedPrompt.promptText}
                   </code>
                 </div>
               </div>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-xs">
                   <div className="w-10 h-10 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                    <img
-                      className="w-full h-full object-cover"
-                      alt="Avatar"
-                      src={selectedPrompt.avatar}
-                    />
+                    <img className="w-full h-full object-cover" alt="Avatar" src={selectedPrompt.avatar} />
                   </div>
-                  <span className="text-label-sm font-label-sm font-bold">
-                    {selectedPrompt.author}
-                  </span>
+                  <span className="text-label-sm font-label-sm font-bold">{selectedPrompt.author}</span>
                 </div>
-                <button
-                  onClick={() => handleCopy(selectedPrompt.promptText)}
-                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
-                >
-                  {copied ? 'Disalin!' : 'Salin Prompt'}
-                </button>
+                <div className="flex items-center gap-sm">
+                  <button
+                    onClick={() => toggleFavorite(selectedPrompt.id)}
+                    className={`px-3 py-1.5 border-2 border-border rounded-full font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer transition-all ${
+                      isFavorite(selectedPrompt.id)
+                        ? 'bg-error text-on-error'
+                        : 'bg-surface text-on-surface-variant'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined align-middle">
+                      favorite
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleCopy(selectedPrompt.promptText)}
+                    className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                  >
+                    {copied ? 'Disalin!' : 'Salin Prompt'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
-     </div>
+    </div>
   );
 }
 

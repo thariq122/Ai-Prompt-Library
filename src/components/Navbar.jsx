@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const navItems = [
   { path: '/', label: 'Beranda' },
@@ -10,10 +11,11 @@ const navItems = [
 function Navbar() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <header className="sticky top-4 z-50 px-4 md:px-margin-desktop mb-md">
-      <nav className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto">
+      <nav className="max-w-7xl mx-auto bg-surface border-[3px] border-border rounded-full px-lg py-sm grid grid-cols-3 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full pointer-events-auto transition-colors duration-300">
         {/* Logo */}
         <div className="flex justify-start">
           <Link
@@ -26,7 +28,7 @@ function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex justify-center">
-          <div className="relative flex gap-lg">
+          <div className="relative flex gap-lg items-center">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -43,8 +45,22 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex justify-end">
+        {/* Right Side: Theme Toggle + Mobile Menu Button */}
+        <div className="flex justify-end items-center gap-sm">
+          {/* Dark Mode Toggle */}
+          {mounted && (
+            <button
+              onClick={toggleTheme}
+              className="p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center hover:bg-primary-container transition-all duration-300 cursor-pointer"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              <span className="material-symbols-outlined text-xl">
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
+          )}
+
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 border-2 border-border rounded-full bg-surface-variant flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -58,7 +74,7 @@ function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute left-4 right-4 top-[70px] bg-surface border-[3px] border-border rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg z-50">
+        <div className="md:hidden absolute left-4 right-4 top-[70px] bg-surface border-[3px] border-border rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg z-50 transition-colors duration-300">
           {navItems.map((item) => (
             <Link
               key={item.path}

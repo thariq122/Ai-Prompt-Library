@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTheme } from '../contexts/ThemeContext';
+import { useFavorites } from '../contexts/FavoritesContext';
+import { homePromptsData } from '../data/prompts';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,48 +14,10 @@ function Home() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [copied, setCopied] = useState(false);
   const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+  const homePagePrompts = homePromptsData;
 
-  const homePrompts = [
-    {
-      id: 1,
-      model: 'Midjourney',
-      modelClass: 'bg-badge-orange',
-      category: 'Unggulan!',
-      categoryClass: 'bg-accent-purple',
-      title: 'Neo-Tokyo Cinematic Stills',
-      description: 'Prompt fotografi 8k sangat detail untuk lingkungan urban futuristik dengan pencahayaan neon.',
-      promptText: '/imagine prompt: Cyberpunk cityscape, rainy night, neon reflections --v 6.0',
-      author: '@pixel_ninja',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAVuje3odSoHu732GKwugz-AkMep9ExpXfDI2M9SQFvnejvZfAHKyaPbyyTAqd80RvX36M5RiEfmvQV2ZH2d5mMo8Vy5kNb3mSOaxlsvb5raVAiMNrmOaeWm2gp8qWITV4guy40fDNCmhctCaQaMfi7sRq7CkORHPD93zj3p1jVzoU1FFUr63bFIW2FNUAEZuR2d3p2Ym2r9CDWzTOYMTGCRUD2j19BsEEvKBkfWNHxvLjkW8DhvEvxlg',
-      price: 'Rp90rb',
-    },
-    {
-      id: 2,
-      model: 'GPT-4',
-      modelClass: 'bg-primary-container',
-      category: '',
-      categoryClass: '',
-      title: 'Arsitek Backend Python',
-      description: 'Instruksi sistem ahli untuk membuat boilerplate FastAPI yang skalabel dengan autentikasi terintegrasi.',
-      promptText: 'Sistem: Anda adalah Senior DevOps Engineer spesialis Kubernetes...',
-      author: '@code_wizard',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0UzNwT9sSDPPJ2DXiI1TLFFMLvRmO2X625hbjo-QTVXrFPXKbwjHTspev-iQmAHE1dVymWS0Q1awXz8FILjxBZRSCCL5VqOayOfO_Ws9Ej-IuFnk7tAvhG3KpEdD3eveRWozDPBjvzwJR02jdApQfvkFKhgBVJZYJPVKAMRrJenQ3bHDiwsYGXfmExZIJbNNL93txd10Y14QrNahUqF5VMkaek0O5QRqMUaT6Lof1m1TSyXNll8TMXw',
-      price: 'Rp190rb',
-    },
-    {
-      id: 3,
-      model: 'DALL-E 3',
-      modelClass: 'bg-badge-orange',
-      category: '',
-      categoryClass: '',
-      title: 'Set Ikon Neubrutalis',
-      description: 'Hasilkan ikon dengan kontras tinggi yang konsisten untuk proyek desain UI web dan mobile.',
-      promptText: 'Hasilkan ikon gaya vektor roket melayang, garis hitam tebal...',
-      author: '@vector_vibe',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD1k4JUfyNiGM8FCx7QnYr4e3EZkDwbGen2lkvwc1ZJhGNIOx5X8cBagnvJsRtgJzJRoZvIZ45aoDehZlPoJNgRX_wlRQsYneUGf9IthTe7frISyzd-RMJ1La6x0Jo5XWbFVvmLjBUZVrO-Obh8NjUjzkgS140F4gd9joZp5u4wFm0V22ogRDPcjKm6X81DEvA8_SahnnmYhSBB_aGqj2WnnAlNXMNJnQty-tTOv-v6VsmxRJUX8FK2mw',
-      price: 'Rp120rb',
-    },
-  ];
+  const { theme, toggleTheme, mounted } = useTheme();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const heroRef = useRef(null);
   const cardsRef = useRef(null);
@@ -61,7 +26,6 @@ function Home() {
   const newsletterRef = useRef(null);
 
   useEffect(() => {
-    // GSAP Hero Animation Timeline
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     tl.fromTo(
@@ -94,7 +58,6 @@ function Home() {
         '-=0.6'
       );
 
-    // Cards Stagger Animation on Scroll with 3D perspective tilt
     const cards = cardsRef.current?.querySelectorAll('.group');
     if (cards) {
       gsap.fromTo(
@@ -117,7 +80,6 @@ function Home() {
       );
     }
 
-    // Story Stats Stagger with scale spring effect
     const stats = storyRef.current?.querySelectorAll('.stat-box');
     if (stats) {
       gsap.fromTo(
@@ -139,7 +101,6 @@ function Home() {
       );
     }
 
-    // FAQ items scroll reveal
     const faqItems = faqRef.current?.querySelectorAll('.accordion-item');
     if (faqItems) {
       gsap.fromTo(
@@ -160,7 +121,6 @@ function Home() {
       );
     }
 
-    // Newsletter section scale up animation
     if (newsletterRef.current) {
       gsap.fromTo(
         newsletterRef.current,
@@ -180,7 +140,6 @@ function Home() {
       );
     }
 
-    // Floating decorative badge animation
     gsap.to('.floating-badge', {
       y: -12,
       rotation: 15,
@@ -216,24 +175,42 @@ function Home() {
     setAccordionOpen(accordionOpen === index ? null : index);
   };
 
+  const toggleThemeWithToast = () => {
+    toggleTheme();
+  };
+
   return (
-    <div className="bg-background text-on-background font-body-md selection:bg-primary-container min-h-screen flex flex-col justify-between overflow-x-hidden">
-      {/* Toast Notification */}
+    <div className={`min-h-screen flex flex-col font-body-md selection:bg-primary-container transition-colors duration-300 ${
+      theme === 'dark' ? 'bg-background-dark text-on-background-dark' : 'bg-background text-on-background'
+    }`}>
       <div
-        className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-secondary-container border-[3px] border-black px-lg py-sm rounded-full shadow-brutal flex items-center gap-sm transition-all ${
+        className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] border-[3px] border-black px-lg py-sm rounded-full shadow-brutal flex items-center gap-sm transition-all ${
           toastVisible
             ? 'opacity-100 translate-y-0'
             : 'opacity-0 -translate-y-5 pointer-events-none'
-        }`}
+        } ${theme === 'dark' ? 'bg-secondary-container text-on-secondary-container' : 'bg-secondary-container text-on-secondary-container'}`}
         id="copy-toast"
       >
-        <span className="material-symbols-outlined text-on-secondary-container">
+        <span className="material-symbols-outlined">
           check_circle
         </span>
-        <span className="font-label-sm text-label-sm text-on-secondary-container">
+        <span className="font-label-sm text-label-sm">
           Prompt Berhasil Disalin!
         </span>
       </div>
+
+      {/* Theme Toggle Button (Floating) */}
+      {mounted && (
+        <button
+          onClick={toggleThemeWithToast}
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full border-[3px] border-black shadow-brutal flex items-center justify-center bg-surface hover:bg-primary-container transition-all duration-300 cursor-pointer"
+          aria-label="Toggle dark mode"
+        >
+          <span className="material-symbols-outlined text-2xl">
+            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+          </span>
+        </button>
+      )}
 
       {/* Hero Section */}
       <section
@@ -263,7 +240,6 @@ function Home() {
             </div>
           </div>
           <div className="hero-card-preview relative lg:h-[600px] flex items-center justify-center">
-            {/* Decorative Element */}
             <div className="absolute inset-0 bg-accent-purple/10 rounded-[40px] border-[3px] border-dashed border-black/20 -rotate-3"></div>
             <div className="bg-surface p-lg border-[3px] border-black rounded-xl shadow-brutal-lg w-full max-w-[500px] relative">
               <div className="flex items-center gap-sm mb-md">
@@ -290,7 +266,6 @@ function Home() {
                 <span className="font-h2 text-[1.5rem]">Rp140.000</span>
               </div>
             </div>
-            {/* Floaties */}
             <div className="floating-badge absolute -top-4 -right-4 bg-badge-orange border-[2px] border-black px-md py-sm rounded-xl shadow-brutal hidden md:block">
               <span className="font-label-sm">Terlaris!</span>
             </div>
@@ -387,7 +362,7 @@ function Home() {
 
         {/* Prompt Card Grid */}
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
-          {homePrompts.map((item) => (
+          {homePagePrompts.map((item) => (
             <div
               key={item.id}
               onClick={(e) => {
@@ -405,13 +380,16 @@ function Home() {
                 <span className={`${item.modelClass} border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm`}>
                   {item.model}
                 </span>
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    toggleFavorite(item.id);
                   }}
-                  className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125"
+                  className={`transition-transform cursor-pointer ${isFavorite(item.id) ? 'text-error' : 'text-on-surface-variant hover:text-primary'}`}
                 >
-                  <span className="material-symbols-outlined">favorite</span>
+                  <span className="material-symbols-outlined">
+                    favorite
+                  </span>
                 </button>
               </div>
               <h3 className="font-h2 text-[1.25rem] mb-sm">
@@ -428,6 +406,7 @@ function Home() {
                   className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
+                    handleCopy(item.promptText);
                     copyPrompt(e);
                   }}
                 >
@@ -436,9 +415,13 @@ function Home() {
                   </span>
                 </button>
               </div>
-              <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
+              <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline_variant">
                 <div className="flex items-center gap-sm">
-                  <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-orange overflow-hidden">
+                  <div className={`w-10 h-10 rounded-full border-[2px] border-black overflow-hidden ${
+                    item.id === 'neo-tokyo-cinematic' ? 'bg-badge-orange' :
+                    item.id === 'backend-python-architect' ? 'bg-secondary-fixed' :
+                    'bg-badge-cyan'
+                  }`}>
                     <img
                       className="w-full h-full object-cover"
                       alt="Avatar"
@@ -456,7 +439,7 @@ function Home() {
         <div className="mt-2xl flex justify-center">
           <Link
             to="/allprompt"
-            className="bg-surface border-[3px] border-black px-xl py-md rounded-full font-h2 text-[1.5rem] shadow-brutal hover-lift active-press cursor-pointer"
+            className="bg-surface border-[3px] border-black px-xl py-md rounded-full font-h2 text-[1.5rem] shadow-brutal hover-lift active-press"
           >
             Lihat Semua Prompt
           </Link>
@@ -468,8 +451,8 @@ function Home() {
         ref={storyRef}
         className="bg-accent-purple py-[120px] px-margin-mobile md:px-margin-desktop overflow-hidden relative"
       >
-        <div className="absolute top-20 left-20 w-32 h-32 border-[3px] border-white/20 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-48 h-48 border-[3px] border-white/20 rounded-lg rotate-12"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 border-[3px] border-white/20 rounded-full animate-pulse dark:border-white/10"></div>
+        <div className="absolute bottom-20 right-20 w-48 h-48 border-[3px] border-white/20 rounded-lg rotate-12 dark:border-white/10"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="font-h1 text-h1 text-surface mb-lg font-black">
             10.000+ Prompt AI Terbaik untuk{' '}
@@ -550,7 +533,10 @@ function Home() {
 
       {/* Newsletter */}
       <section className="pb-2xl px-margin-mobile md:px-margin-desktop">
-        <div ref={newsletterRef} className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl shadow-brutal-lg flex flex-col md:flex-row items-center justify-between gap-xl">
+        <div
+          ref={newsletterRef}
+          className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl shadow-brutal-lg flex flex-col md:flex-row items-center justify-between gap-xl"
+        >
           <div className="max-w-md">
             <h2 className="font-h1 text-[2.5rem] mb-md leading-tight font-black">
               Bergabung dengan Inner Circle
@@ -574,7 +560,7 @@ function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop">
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop transition-colors duration-300">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
           <div className="col-span-1 md:col-span-2">
             <Link
@@ -613,7 +599,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <h4 className="font-headline-lg text-xl mb-lg">Pasar</h4>
+            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">Pasar</h4>
             <ul className="space-y-sm">
               <li>
                 <a
@@ -624,12 +610,12 @@ function Home() {
                 </a>
               </li>
               <li>
-                <Link
+                <a
                   className="text-on-surface-variant hover:text-primary transition-colors"
-                  to="/"
+                  href="#"
                 >
                   Model
-                </Link>
+                </a>
               </li>
               <li>
                 <a
@@ -650,7 +636,7 @@ function Home() {
             </ul>
           </div>
           <div>
-            <h4 className="font-headline-lg text-xl mb-lg">Legal</h4>
+            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">Legal</h4>
             <ul className="space-y-sm">
               <li>
                 <a
@@ -707,17 +693,15 @@ function Home() {
         >
           <div
             className="bg-surface border-[3px] border-border rounded-xl p-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full my-auto animate-in fade-in zoom-in-95 duration-200"
-            style={{
-              transformOrigin: `${modalPos.x}px ${modalPos.y}px`
-            }}
+            style={{ transformOrigin: `${modalPos.x}px ${modalPos.y}px` }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-lg">
-              <div>
+              <div className="flex-1">
                 <h2 className="font-headline-xl text-3xl font-black mb-xs">
                   {selectedPrompt.title}
                 </h2>
-                <div className="flex gap-sm">
+                <div className="flex gap-sm flex-wrap">
                   <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     {selectedPrompt.model}
                   </span>
@@ -738,44 +722,44 @@ function Home() {
 
             <div className="space-y-lg">
               <div>
-                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
-                  Deskripsi
-                </h3>
-                <p className="font-body-md text-on-surface">
-                  {selectedPrompt.description}
-                </p>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">Deskripsi</h3>
+                <p className="font-body-md text-on-surface">{selectedPrompt.description}</p>
               </div>
-
               <div>
-                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
-                  Prompt Text
-                </h3>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">Prompt Text</h3>
                 <div className="bg-surface-container-low border-2 border-border rounded-lg p-md font-code-sm text-code-sm overflow-x-auto">
                   <code className="block text-on-surface-variant whitespace-pre">
                     {selectedPrompt.promptText}
                   </code>
                 </div>
               </div>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-xs">
                   <div className="w-10 h-10 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                    <img
-                      className="w-full h-full object-cover"
-                      alt="Avatar"
-                      src={selectedPrompt.avatar}
-                    />
+                    <img className="w-full h-full object-cover" alt="Avatar" src={selectedPrompt.avatar} />
                   </div>
-                  <span className="text-label-sm font-label-sm font-bold">
-                    {selectedPrompt.author}
-                  </span>
+                  <span className="text-label-sm font-label-sm font-bold">{selectedPrompt.author}</span>
                 </div>
-                <button
-                  onClick={() => handleCopy(selectedPrompt.promptText)}
-                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
-                >
-                  {copied ? 'Disalin!' : 'Salin Prompt'}
-                </button>
+                <div className="flex items-center gap-sm">
+                  <button
+                    onClick={() => toggleFavorite(selectedPrompt.id)}
+                    className={`px-3 py-1.5 border-2 border-border rounded-full font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer transition-all ${
+                      isFavorite(selectedPrompt.id)
+                        ? 'bg-error text-on-error'
+                        : 'bg-surface text-on-surface-variant'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined align-middle">
+                      favorite
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleCopy(selectedPrompt.promptText)}
+                    className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                  >
+                    {copied ? 'Disalin!' : 'Salin Prompt'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
