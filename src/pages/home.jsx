@@ -496,7 +496,7 @@ function Home() {
         <div className="absolute bottom-20 right-20 w-48 h-48 border-[3px] border-white/20 rounded-lg rotate-12"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="font-h1 text-h1 text-surface mb-lg font-black">
-            10.000+ Prompt AI Terkurasi untuk{' '}
+            10.000+ Prompt AI Terakurat untuk{' '}
             <span className="text-secondary-fixed">Kreator</span> &amp; Engineer
           </h2>
           <p className="text-xl text-surface/90 mb-2xl">
