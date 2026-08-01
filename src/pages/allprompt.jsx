@@ -71,6 +71,16 @@ const dummyPrompts = [
 function AllPrompt() {
   const containerRef = useRef(null);
   const [filter, setFilter] = useState('Semua');
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+
+  const handleCopy = (text, e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const filteredPrompts = filter === 'Semua' 
     ? dummyPrompts 
@@ -154,7 +164,11 @@ function AllPrompt() {
           {filteredPrompts.map((item) => (
             <div
               key={item.id}
-              className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group prompt-card-item"
+              onClick={(e) => {
+                setModalPos({ x: e.clientX, y: e.clientY });
+                setSelectedPrompt(item);
+              }}
+              className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group prompt-card-item cursor-pointer"
             >
               <div className="flex justify-between items-start mb-md">
                 <div className="flex gap-sm">
@@ -165,7 +179,10 @@ function AllPrompt() {
                     {item.category}
                   </span>
                 </div>
-                <button className="text-error active:scale-90 transition-transform cursor-pointer">
+                <button 
+                  onClick={(e) => e.stopPropagation()} 
+                  className="text-error active:scale-90 transition-transform cursor-pointer"
+                >
                   <span
                     className="material-symbols-outlined"
                     style={{ fontVariationSettings: '"FILL" 0' }}
@@ -198,8 +215,11 @@ function AllPrompt() {
                     {item.author}
                   </span>
                 </div>
-                <button className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer">
-                  Salin
+                <button 
+                  onClick={(e) => handleCopy(item.promptText, e)}
+                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                >
+                  {copied ? 'Disalin!' : 'Salin'}
                 </button>
               </div>
             </div>
@@ -214,13 +234,94 @@ function AllPrompt() {
             © 2026 PromptVault AI
           </p>
           <Link
-            to="/about"
+            to="/"
             className="bg-surface border-[2px] border-black px-md py-xs rounded-full text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all inline-block"
           >
-            Kembali ke Tentang Kami
+            Kembali
           </Link>
         </div>
       </footer>
+
+      {/* Modal Overlay */}
+      {selectedPrompt && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 p-md overflow-y-auto flex items-center justify-center"
+          onClick={() => setSelectedPrompt(null)}
+        >
+          <div
+            className="bg-surface border-[3px] border-border rounded-xl p-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full my-auto animate-in fade-in zoom-in-95 duration-200"
+            style={{
+              transformOrigin: `${modalPos.x}px ${modalPos.y}px`
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-lg">
+              <div>
+                <h2 className="font-headline-xl text-3xl font-black mb-xs">
+                  {selectedPrompt.title}
+                </h2>
+                <div className="flex gap-sm">
+                  <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {selectedPrompt.model}
+                  </span>
+                  <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {selectedPrompt.category}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedPrompt(null)}
+                className="text-on-surface-variant hover:text-on-surface"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-lg">
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Deskripsi
+                </h3>
+                <p className="font-body-md text-on-surface">
+                  {selectedPrompt.description}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Prompt Text
+                </h3>
+                <div className="bg-surface-container-low border-2 border-border rounded-lg p-md font-code-sm text-code-sm overflow-x-auto">
+                  <code className="block text-on-surface-variant whitespace-pre">
+                    {selectedPrompt.promptText}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-xs">
+                  <div className="w-10 h-10 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
+                    <img
+                      className="w-full h-full object-cover"
+                      alt="Avatar"
+                      src={selectedPrompt.avatar}
+                    />
+                  </div>
+                  <span className="text-label-sm font-label-sm font-bold">
+                    {selectedPrompt.author}
+                  </span>
+                </div>
+                <button
+                  onClick={(e) => handleCopy(selectedPrompt.promptText, e)}
+                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                >
+                  {copied ? 'Disalin!' : 'Salin Prompt'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

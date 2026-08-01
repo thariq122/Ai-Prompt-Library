@@ -8,6 +8,51 @@ gsap.registerPlugin(ScrollTrigger);
 function Home() {
   const [toastVisible, setToastVisible] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(null);
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+
+  const homePrompts = [
+    {
+      id: 1,
+      model: 'Midjourney',
+      modelClass: 'bg-badge-orange',
+      category: 'Unggulan!',
+      categoryClass: 'bg-accent-purple',
+      title: 'Neo-Tokyo Cinematic Stills',
+      description: 'Prompt fotografi 8k sangat detail untuk lingkungan urban futuristik dengan pencahayaan neon.',
+      promptText: '/imagine prompt: Cyberpunk cityscape, rainy night, neon reflections --v 6.0',
+      author: '@pixel_ninja',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAVuje3odSoHu732GKwugz-AkMep9ExpXfDI2M9SQFvnejvZfAHKyaPbyyTAqd80RvX36M5RiEfmvQV2ZH2d5mMo8Vy5kNb3mSOaxlsvb5raVAiMNrmOaeWm2gp8qWITV4guy40fDNCmhctCaQaMfi7sRq7CkORHPD93zj3p1jVzoU1FFUr63bFIW2FNUAEZuR2d3p2Ym2r9CDWzTOYMTGCRUD2j19BsEEvKBkfWNHxvLjkW8DhvEvxlg',
+      price: 'Rp90rb',
+    },
+    {
+      id: 2,
+      model: 'GPT-4',
+      modelClass: 'bg-primary-container',
+      category: '',
+      categoryClass: '',
+      title: 'Arsitek Backend Python',
+      description: 'Instruksi sistem ahli untuk membuat boilerplate FastAPI yang skalabel dengan autentikasi terintegrasi.',
+      promptText: 'Sistem: Anda adalah Senior DevOps Engineer spesialis Kubernetes...',
+      author: '@code_wizard',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0UzNwT9sSDPPJ2DXiI1TLFFMLvRmO2X625hbjo-QTVXrFPXKbwjHTspev-iQmAHE1dVymWS0Q1awXz8FILjxBZRSCCL5VqOayOfO_Ws9Ej-IuFnk7tAvhG3KpEdD3eveRWozDPBjvzwJR02jdApQfvkFKhgBVJZYJPVKAMRrJenQ3bHDiwsYGXfmExZIJbNNL93txd10Y14QrNahUqF5VMkaek0O5QRqMUaT6Lof1m1TSyXNll8TMXw',
+      price: 'Rp190rb',
+    },
+    {
+      id: 3,
+      model: 'DALL-E 3',
+      modelClass: 'bg-badge-orange',
+      category: '',
+      categoryClass: '',
+      title: 'Set Ikon Neubrutalis',
+      description: 'Hasilkan ikon dengan kontras tinggi yang konsisten untuk proyek desain UI web dan mobile.',
+      promptText: 'Hasilkan ikon gaya vektor roket melayang, garis hitam tebal...',
+      author: '@vector_vibe',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD1k4JUfyNiGM8FCx7QnYr4e3EZkDwbGen2lkvwc1ZJhGNIOx5X8cBagnvJsRtgJzJRoZvIZ45aoDehZlPoJNgRX_wlRQsYneUGf9IthTe7frISyzd-RMJ1La6x0Jo5XWbFVvmLjBUZVrO-Obh8NjUjzkgS140F4gd9joZp5u4wFm0V22ogRDPcjKm6X81DEvA8_SahnnmYhSBB_aGqj2WnnAlNXMNJnQty-tTOv-v6VsmxRJUX8FK2mw',
+      price: 'Rp120rb',
+    },
+  ];
 
   const heroRef = useRef(null);
   const cardsRef = useRef(null);
@@ -159,6 +204,12 @@ function Home() {
     setTimeout(() => {
       setToastVisible(false);
     }, 2000);
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const toggleAccordion = (index) => {
@@ -336,145 +387,70 @@ function Home() {
 
         {/* Prompt Card Grid */}
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
-          {/* Card 1 */}
-          <div className="group relative bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
-            <div className="absolute -top-4 -left-2 bg-accent-purple text-surface px-md py-xs rounded-full border-[2px] border-black font-label-sm rotate-[-5deg] z-10 animate-float-badge">
-              Unggulan!
-            </div>
-            <div className="flex justify-between items-start mb-md">
-              <span className="bg-badge-cyan border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
-                MIDJOURNEY
-              </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
-                <span className="material-symbols-outlined">favorite</span>
-              </button>
-            </div>
-            <h3 className="font-h2 text-[1.25rem] mb-sm">
-              Neo-Tokyo Cinematic Stills
-            </h3>
-            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
-              Prompt fotografi 8k sangat detail untuk lingkungan urban
-              futuristik dengan pencahayaan neon.
-            </p>
-            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
-              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
-                /imagine prompt: Cyberpunk cityscape, rainy night, neon
-                reflections --v 6.0
-              </pre>
-              <button
-                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
-                onClick={copyPrompt}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  content_copy
-                </span>
-              </button>
-            </div>
-            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
-              <div className="flex items-center gap-sm">
-                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-orange overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVuje3odSoHu732GKwugz-AkMep9ExpXfDI2M9SQFvnejvZfAHKyaPbyyTAqd80RvX36M5RiEfmvQV2ZH2d5mMo8Vy5kNb3mSOaxlsvb5raVAiMNrmOaeWm2gp8qWITV4guy40fDNCmhctCaQaMfi7sRq7CkORHPD93zj3p1jVzoU1FFUr63bFIW2FNUAEZuR2d3p2Ym2r9CDWzTOYMTGCRUD2j19BsEEvKBkfWNHxvLjkW8DhvEvxlg"
-                  />
+          {homePrompts.map((item) => (
+            <div
+              key={item.id}
+              onClick={(e) => {
+                setModalPos({ x: e.clientX, y: e.clientY });
+                setSelectedPrompt(item);
+              }}
+              className="group relative bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300 cursor-pointer"
+            >
+              {item.category && (
+                <div className="absolute -top-4 -left-2 bg-accent-purple text-surface px-md py-xs rounded-full border-[2px] border-black font-label-sm rotate-[-5deg] z-10 animate-float-badge">
+                  {item.category}
                 </div>
-                <span className="font-label-sm text-sm">@pixel_ninja</span>
-              </div>
-              <span className="font-h2 text-xl">Rp90rb</span>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
-            <div className="flex justify-between items-start mb-md">
-              <span className="bg-primary-container border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
-                GPT-4
-              </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
-                <span className="material-symbols-outlined">favorite</span>
-              </button>
-            </div>
-            <h3 className="font-h2 text-[1.25rem] mb-sm">
-              Arsitek Backend Python
-            </h3>
-            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
-              Instruksi sistem ahli untuk membuat boilerplate FastAPI yang
-              skalabel dengan autentikasi terintegrasi.
-            </p>
-            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
-              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
-                Sistem: Anda adalah Senior DevOps Engineer spesialis
-                Kubernetes...
-              </pre>
-              <button
-                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
-                onClick={copyPrompt}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  content_copy
+              )}
+              <div className="flex justify-between items-start mb-md">
+                <span className={`${item.modelClass} border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm`}>
+                  {item.model}
                 </span>
-              </button>
-            </div>
-            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
-              <div className="flex items-center gap-sm">
-                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-secondary-fixed overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0UzNwT9sSDPPJ2DXiI1TLFFMLvRmO2X625hbjo-QTVXrFPXKbwjHTspev-iQmAHE1dVymWS0Q1awXz8FILjxBZRSCCL5VqOayOfO_Ws9Ej-IuFnk7tAvhG3KpEdD3eveRWozDPBjvzwJR02jdApQfvkFKhgBVJZYJPVKAMRrJenQ3bHDiwsYGXfmExZIJbNNL93txd10Y14QrNahUqF5VMkaek0O5QRqMUaT6Lof1m1TSyXNll8TMXw"
-                  />
-                </div>
-                <span className="font-label-sm text-sm">@code_wizard</span>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125"
+                >
+                  <span className="material-symbols-outlined">favorite</span>
+                </button>
               </div>
-              <span className="font-h2 text-xl">Rp190rb</span>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="group bg-surface border-[3px] border-black rounded-[20px] p-lg shadow-brutal hover-lift transition-all duration-300">
-            <div className="flex justify-between items-start mb-md">
-              <span className="bg-badge-orange border-[2px] border-black px-sm py-xs rounded-lg font-label-sm text-[12px] shadow-brutal-sm">
-                DALL-E 3
-              </span>
-              <button className="text-on-surface-variant hover:text-primary cursor-pointer transition-transform hover:scale-125">
-                <span className="material-symbols-outlined">favorite</span>
-              </button>
-            </div>
-            <h3 className="font-h2 text-[1.25rem] mb-sm">
-              Set Ikon Neubrutalis
-            </h3>
-            <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
-              Hasilkan ikon dengan kontras tinggi yang konsisten untuk proyek
-              desain UI web dan mobile.
-            </p>
-            <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
-              <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
-                Hasilkan ikon gaya vektor roket melayang, garis hitam tebal...
-              </pre>
-              <button
-                className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
-                onClick={copyPrompt}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  content_copy
-                </span>
-              </button>
-            </div>
-            <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
-              <div className="flex items-center gap-sm">
-                <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-cyan overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1k4JUfyNiGM8FCx7QnYr4e3EZkDwbGen2lkvwc1ZJhGNIOx5X8cBagnvJsRtgJzJRoZvIZ45aoDehZlPoJNgRX_wlRQsYneUGf9IthTe7frISyzd-RMJ1La6x0Jo5XWbFVvmLjBUZVrO-Obh8NjUjzkgS140F4gd9joZp5u4wFm0V22ogRDPcjKm6X81DEvA8_SahnnmYhSBB_aGqj2WnnAlNXMNJnQty-tTOv-v6VsmxRJUX8FK2mw"
-                  />
-                </div>
-                <span className="font-label-sm text-sm">@vector_vibe</span>
+              <h3 className="font-h2 text-[1.25rem] mb-sm">
+                {item.title}
+              </h3>
+              <p className="text-body-md text-on-surface-variant text-sm mb-lg line-clamp-2">
+                {item.description}
+              </p>
+              <div className="bg-surface-container rounded-xl border-[2.5px] border-black p-md mb-lg relative">
+                <pre className="font-code-sm text-code-sm overflow-hidden whitespace-pre-wrap">
+                  {item.promptText}
+                </pre>
+                <button
+                  className="absolute top-2 right-2 bg-surface border-[2px] border-black p-xs rounded-lg hover:bg-primary-container transition-all cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyPrompt(e);
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    content_copy
+                  </span>
+                </button>
               </div>
-              <span className="font-h2 text-xl">Rp120rb</span>
+              <div className="flex items-center justify-between mt-auto pt-md border-t-[2px] border-dashed border-outline-variant">
+                <div className="flex items-center gap-sm">
+                  <div className="w-10 h-10 rounded-full border-[2px] border-black bg-badge-orange overflow-hidden">
+                    <img
+                      className="w-full h-full object-cover"
+                      alt="Avatar"
+                      src={item.avatar}
+                    />
+                  </div>
+                  <span className="font-label-sm text-sm">{item.author}</span>
+                </div>
+                <span className="font-h2 text-xl">{item.price}</span>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
 
         <div className="mt-2xl flex justify-center">
@@ -722,6 +698,89 @@ function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Modal Overlay */}
+      {selectedPrompt && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 p-md overflow-y-auto flex items-center justify-center"
+          onClick={() => setSelectedPrompt(null)}
+        >
+          <div
+            className="bg-surface border-[3px] border-border rounded-xl p-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full my-auto animate-in fade-in zoom-in-95 duration-200"
+            style={{
+              transformOrigin: `${modalPos.x}px ${modalPos.y}px`
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-lg">
+              <div>
+                <h2 className="font-headline-xl text-3xl font-black mb-xs">
+                  {selectedPrompt.title}
+                </h2>
+                <div className="flex gap-sm">
+                  <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {selectedPrompt.model}
+                  </span>
+                  {selectedPrompt.category && (
+                    <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      {selectedPrompt.category}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedPrompt(null)}
+                className="text-on-surface-variant hover:text-on-surface"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-lg">
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Deskripsi
+                </h3>
+                <p className="font-body-md text-on-surface">
+                  {selectedPrompt.description}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Prompt Text
+                </h3>
+                <div className="bg-surface-container-low border-2 border-border rounded-lg p-md font-code-sm text-code-sm overflow-x-auto">
+                  <code className="block text-on-surface-variant whitespace-pre">
+                    {selectedPrompt.promptText}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-xs">
+                  <div className="w-10 h-10 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
+                    <img
+                      className="w-full h-full object-cover"
+                      alt="Avatar"
+                      src={selectedPrompt.avatar}
+                    />
+                  </div>
+                  <span className="text-label-sm font-label-sm font-bold">
+                    {selectedPrompt.author}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCopy(selectedPrompt.promptText)}
+                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                >
+                  {copied ? 'Disalin!' : 'Salin Prompt'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
