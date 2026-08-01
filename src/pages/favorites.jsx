@@ -1,12 +1,72 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const favoritePrompts = [
+  {
+    id: 1,
+    model: 'GPT-4',
+    modelClass: 'bg-badge-cyan',
+    category: 'Kreatif',
+    categoryClass: 'bg-badge-orange',
+    title: 'Lanskap Cyberpunk Surealis',
+    description: 'Hasilkan metropolis neon yang luas dengan struktur terapung organik dan kabut atmosfer bioluminesensi...',
+    promptText: '/imagine prompt: taman terapung penuh neon di langit neo-tokyo...',
+    author: '@pixel_wizard',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBqqSW4FftwEuczhW__4ZMLmANdZoAmH34XEhCUmZIq4BuetfylQ_KX3h9p6cwDAPmz-hYY945sR-sav8y97qJEsETfHRx2yewFCtDa_8btAOhRQqVCqqeFbjUqkj_UfxNykB0xWkakyhnuChSp1_hHowHRNmkVl0B9RVFLmiRvAE8vjJ0_v9YvEyxvhGlHZxeU1rZzJnOZyixwIFthrk-2rD6Yzv9CoqWVjxOObjVhNZn3Fsou_X945g',
+  },
+  {
+    id: 2,
+    model: 'Claude 3',
+    modelClass: 'bg-secondary-container',
+    category: 'Analisis',
+    categoryClass: 'bg-surface-container-highest',
+    title: 'Pemecah Logika Kompleks',
+    description: 'Pendekatan struktural untuk memecahkan paradoks matematika dan logika multi-langkah dengan penalaran tahap demi tahap yang jelas...',
+    promptText: 'Analisis paradoks berikut melalui kacamata logika formal...',
+    author: '@logic_lord',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAIVjw3r5hDuozC-gaAMZI3ENvuLnLnC2mu7RfE3ETsMB_bJYFLahulOlZNcqPOwyBVXY7fQGvQYastqLJF0fCYtVGAuuht8BL_Xy0KFaBpcvEeTH2RA8ru-jh0CJwkBx5lklvHQmMri6CDfFFwOHuM_nXf2Ru0rHclK5HP4aUH1bDEJ_nE4ID8OM6rleoFgCC5U34e50EK1ttQrd41LnNPZJUk_qYYIuLk6uzHPuiz1VD9b7qubTnwUA',
+  },
+  {
+    id: 3,
+    model: 'Midjourney',
+    modelClass: 'bg-primary-container',
+    category: 'Seni',
+    categoryClass: 'bg-badge-cyan',
+    title: 'Estetika Poster Vintage',
+    description: 'Buat tata letak tipografi Gaya Swiss tahun 1960-an dengan tekstur grainy, blok warna datar, dan set ikon minimalis...',
+    promptText: 'desain grafis 1960-an, gaya internasional Swiss, warna primer...',
+    author: '@retro_guru',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDg7K7Bu6Y4JZiYimvYdThHXPe1rWn6s6Z4LasbSf3NF-5cioVNnqbqNRfmJjSTyffGHeO00Q0M63aKjTiMQKnnY3xl-IHRwI3eoLm3gUZ1Ns2jiaTfxEJQOkf8OJiv6Pv__fdWOVlSMV-Ks_cbL9ti9OQPoy7RKCn8hyBSvH2V_KiQ0Hcd5pNgTKOimND0fK7NtTi1NJRrCGyvvHkBZEO7FKGcS4D6J6hQLdAVNkjk_8TEy9dpKJwEcA',
+  },
+  {
+    id: 4,
+    model: 'Stable Diffusion',
+    modelClass: 'bg-secondary-container',
+    category: '',
+    categoryClass: '',
+    title: 'Desain Ruang Isometrik',
+    description: 'Ruang isometrik 3D detail dengan pencahayaan nyaman, detail rumit, dan estetika clay-render yang lembut...',
+    promptText: 'ruang gaming low-poly isometrik, octane render, pencahayaan global lembut...',
+    author: '@iso_master',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcDyeTCZHgvMGVRIb_xk7AvgJRC0AnWrjH4lQmw62oBPKmVenJH8g0qD2QzskftHYe3L1J0sJDUj92tsGe20naqnAfxUdpZI0m1W5unJmXsl4tWbbHJ8gxsCo9h7V5M4zkdfiwtqN-DycEJUoHpCNITPH6GGDic-oJ5t5ZwjNR4V2s6UmxvsNHFSy50TRhSJTYtiSlPz6uZpMG-B486i3jnFjyVBU_zf8ca5jFJpFu2LEm6tm9SGgC5A',
+  },
+];
+
 function Favorites() {
   const containerRef = useRef(null);
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -125,228 +185,74 @@ function Favorites() {
 
         {/* Favorites Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter favorites-grid">
-          {/* Prompt Card 1 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
-            <div className="flex justify-between items-start mb-md">
-              <div className="flex gap-sm">
-                <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  GPT-4
-                </span>
-                <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Kreatif
-                </span>
-              </div>
-              <button className="text-error active:scale-90 transition-transform">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  favorite
-                </span>
-              </button>
-            </div>
-            <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
-              Lanskap Cyberpunk Surealis
-            </h3>
-            <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
-              Hasilkan metropolis neon yang luas dengan struktur terapung
-              organik dan kabut atmosfer bioluminesensi...
-            </p>
-            <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
-              <code className="block text-on-surface-variant">
-                /imagine prompt: taman terapung penuh neon di langit neo-tokyo...
-              </code>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-xs">
-                <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqqSW4FftwEuczhW__4ZMLmANdZoAmH34XEhCUmZIq4BuetfylQ_KX3h9p6cwDAPmz-hYY945sR-sav8y97qJEsETfHRx2yewFCtDa_8btAOhRQqVCqqeFbjUqkj_UfxNykB0xWkakyhnuChSp1_hHowHRNmkVl0B9RVFLmiRvAE8vjJ0_v9YvEyxvhGlHZxeU1rZzJnOZyixwIFthrk-2rD6Yzv9CoqWVjxOObjVhNZn3Fsou_X945g"
-                  />
+          {favoritePrompts.map((item) => (
+            <div
+              key={item.id}
+              onClick={(e) => {
+                setModalPos({ x: e.clientX, y: e.clientY });
+                setSelectedPrompt(item);
+              }}
+              className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card cursor-pointer"
+            >
+              <div className="flex justify-between items-start mb-md">
+                <div className="flex gap-sm">
+                  <span className={`${item.modelClass} text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
+                    {item.model}
+                  </span>
+                  {item.category && (
+                    <span className={`${item.categoryClass} text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
+                      {item.category}
+                    </span>
+                  )}
                 </div>
-                <span className="text-label-sm font-label-sm">
-                  @pixel_wizard
-                </span>
-              </div>
-              <button className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer">
-                Salin
-              </button>
-            </div>
-          </div>
-
-          {/* Prompt Card 2 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
-            <div className="flex justify-between items-start mb-md">
-              <div className="flex gap-sm">
-                <span className="bg-secondary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Claude 3
-                </span>
-                <span className="bg-surface-container-highest text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Analisis
-                </span>
-              </div>
-              <button className="text-error active:scale-90 transition-transform">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
+                <button 
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-error active:scale-90 transition-transform"
                 >
-                  favorite
-                </span>
-              </button>
-            </div>
-            <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
-              Pemecah Logika Kompleks
-            </h3>
-            <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
-              Pendekatan struktural untuk memecahkan paradoks matematika dan
-              logika multi-langkah dengan penalaran tahap demi tahap yang
-              jelas...
-            </p>
-            <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
-              <code className="block text-on-surface-variant">
-                Analisis paradoks berikut melalui kacamata logika formal...
-              </code>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-xs">
-                <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIVjw3r5hDuozC-gaAMZI3ENvuLnLnC2mu7RfE3ETsMB_bJYFLahulOlZNcqPOwyBVXY7fQGvQYastqLJF0fCYtVGAuuht8BL_Xy0KFaBpcvEeTH2RA8ru-jh0CJwkBx5lklvHQmMri6CDfFFwOHuM_nXf2Ru0rHclK5HP4aUH1bDEJ_nE4ID8OM6rleoFgCC5U34e50EK1ttQrd41LnNPZJUk_qYYIuLk6uzHPuiz1VD9b7qubTnwUA"
-                  />
-                </div>
-                <span className="text-label-sm font-label-sm">
-                  @logic_lord
-                </span>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontVariationSettings: '"FILL" 1' }}
+                  >
+                    favorite
+                  </span>
+                </button>
               </div>
-              <button className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer">
-                Salin
-              </button>
-            </div>
-          </div>
-
-          {/* Prompt Card 3 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
-            <div className="flex justify-between items-start mb-md">
-              <div className="flex gap-sm">
-                <span className="bg-primary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Midjourney
-                </span>
-                <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Seni
-                </span>
-              </div>
-              <button className="text-error active:scale-90 transition-transform">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  favorite
-                </span>
-              </button>
-            </div>
-            <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
-              Estetika Poster Vintage
-            </h3>
-            <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
-              Buat tata letak tipografi Gaya Swiss tahun 1960-an dengan tekstur
-              grainy, blok warna datar, dan set ikon minimalis...
-            </p>
-            <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
-              <code className="block text-on-surface-variant">
-                desain grafis 1960-an, gaya internasional Swiss, warna
-                primer...
-              </code>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-xs">
-                <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg7K7Bu6Y4JZiYimvYdThHXPe1rWn6s6Z4LasbSf3NF-5cioVNnqbqNRfmJjSTyffGHeO00Q0M63aKjTiMQKnnY3xl-IHRwI3eoLm3gUZ1Ns2jiaTfxEJQOkf8OJiv6Pv__fdWOVlSMV-Ks_cbL9ti9OQPoy7RKCn8hyBSvH2V_KiQ0Hcd5pNgTKOimND0fK7NtTi1NJRrCGyvvHkBZEO7FKGcS4D6J6hQLdAVNkjk_8TEy9dpKJwEcA"
-                  />
-                </div>
-                <span className="text-label-sm font-label-sm">
-                  @retro_guru
-                </span>
-              </div>
-              <button className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer">
-                Salin
-              </button>
-            </div>
-          </div>
-
-          {/* Featured Card - Bento Style */}
-          <div className="md:col-span-2 lg:col-span-1 bg-tertiary-fixed border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between overflow-hidden relative group featured-card">
-            <div className="relative z-10">
-              <h3 className="font-headline-lg text-3xl mb-md leading-tight">
-                Kuasai Seni Prompting
+              <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
+                {item.title}
               </h3>
-              <p className="font-body-md text-on-tertiary-fixed mb-lg">
-                Buka potensi penuh AI dengan sertifikasi Prompt Engineering kami
-                yang terkurasi.
+              <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
+                {item.description}
               </p>
-              <button className="bg-on-tertiary-fixed text-tertiary-fixed px-lg py-md border-2 border-border rounded-xl font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer">
-                Daftar Sekarang
-              </button>
-            </div>
-            <div className="absolute -right-10 -bottom-10 opacity-20 group-hover:rotate-12 transition-transform duration-500">
-              <span className="material-symbols-outlined text-[200px]">
-                rocket_launch
-              </span>
-            </div>
-          </div>
-
-          {/* Prompt Card 4 */}
-          <div className="bg-surface border-[3px] border-border rounded-xl p-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group favorite-card">
-            <div className="flex justify-between items-start mb-md">
-              <div className="flex gap-sm">
-                <span className="bg-secondary-container text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  Stable Diffusion
-                </span>
+              <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
+                <code className="block text-on-surface-variant">
+                  {item.promptText}
+                </code>
               </div>
-              <button className="text-error active:scale-90 transition-transform">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  favorite
-                </span>
-              </button>
-            </div>
-            <h3 className="font-headline-lg text-2xl font-bold mb-sm group-hover:text-primary transition-colors">
-              Desain Ruang Isometrik
-            </h3>
-            <p className="text-on-surface-variant line-clamp-3 mb-md font-body-md">
-              Ruang isometrik 3D detail dengan pencahayaan nyaman, detail
-              rumit, dan estetika clay-render yang lembut...
-            </p>
-            <div className="bg-surface-container-low border-2 border-border rounded-lg p-md mb-md font-code-sm text-code-sm overflow-hidden">
-              <code className="block text-on-surface-variant">
-                ruang gaming low-poly isometrik, octane render, pencahayaan
-                global lembut...
-              </code>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-xs">
-                <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Avatar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcDyeTCZHgvMGVRIb_xk7AvgJRC0AnWrjH4lQmw62oBPKmVenJH8g0qD2QzskftHYe3L1J0sJDUj92tsGe20naqnAfxUdpZI0m1W5unJmXsl4tWbbHJ8gxsCo9h7V5M4zkdfiwtqN-DycEJUoHpCNITPH6GGDic-oJ5t5ZwjNR4V2s6UmxvsNHFSy50TRhSJTYtiSlPz6uZpMG-B486i3jnFjyVBU_zf8ca5jFJpFu2LEm6tm9SGgC5A"
-                  />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-xs">
+                  <div className="w-8 h-8 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
+                    <img
+                      className="w-full h-full object-cover"
+                      alt="Avatar"
+                      src={item.avatar}
+                    />
+                  </div>
+                  <span className="text-label-sm font-label-sm">
+                    {item.author}
+                  </span>
                 </div>
-                <span className="text-label-sm font-label-sm">@iso_master</span>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy(item.promptText);
+                  }}
+                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                >
+                  Salin
+                </button>
               </div>
-              <button className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer">
-                Salin
-              </button>
             </div>
-          </div>
+          ))}
 
           {/* Browse More CTA Card */}
           <div className="bg-surface-container border-[3px] border-border border-dashed rounded-xl p-lg flex flex-col items-center justify-center text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group cta-card">
@@ -522,6 +428,89 @@ function Favorites() {
           </div>
         </div>
        </footer>
+
+       {/* Modal Overlay */}
+      {selectedPrompt && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 p-md overflow-y-auto flex items-center justify-center"
+          onClick={() => setSelectedPrompt(null)}
+        >
+          <div
+            className="bg-surface border-[3px] border-border rounded-xl p-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full my-auto animate-in fade-in zoom-in-95 duration-200"
+            style={{
+              transformOrigin: `${modalPos.x}px ${modalPos.y}px`
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-lg">
+              <div>
+                <h2 className="font-headline-xl text-3xl font-black mb-xs">
+                  {selectedPrompt.title}
+                </h2>
+                <div className="flex gap-sm">
+                  <span className="bg-badge-cyan text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {selectedPrompt.model}
+                  </span>
+                  {selectedPrompt.category && (
+                    <span className="bg-badge-orange text-on-surface border-2 border-border rounded-full px-3 py-0.5 text-label-sm font-label-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      {selectedPrompt.category}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedPrompt(null)}
+                className="text-on-surface-variant hover:text-on-surface"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-lg">
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Deskripsi
+                </h3>
+                <p className="font-body-md text-on-surface">
+                  {selectedPrompt.description}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-label-sm font-label-sm text-on-surface-variant mb-xs">
+                  Prompt Text
+                </h3>
+                <div className="bg-surface-container-low border-2 border-border rounded-lg p-md font-code-sm text-code-sm overflow-x-auto">
+                  <code className="block text-on-surface-variant whitespace-pre">
+                    {selectedPrompt.promptText}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-xs">
+                  <div className="w-10 h-10 rounded-full border-2 border-border overflow-hidden bg-surface-variant">
+                    <img
+                      className="w-full h-full object-cover"
+                      alt="Avatar"
+                      src={selectedPrompt.avatar}
+                    />
+                  </div>
+                  <span className="text-label-sm font-label-sm font-bold">
+                    {selectedPrompt.author}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCopy(selectedPrompt.promptText)}
+                  className="bg-primary text-on-primary px-4 py-1.5 border-2 border-border rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 cursor-pointer"
+                >
+                  {copied ? 'Disalin!' : 'Salin Prompt'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
      </div>
   );
 }
