@@ -2,15 +2,16 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTheme } from '../contexts/ThemeContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function About() {
   const containerRef = useRef(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero: text slides up with stagger
       gsap.from('.about-hero-text > *', {
         y: 40,
         opacity: 0,
@@ -19,7 +20,6 @@ function About() {
         ease: 'power3.out'
       });
 
-      // Hero: image scales in from right with rotation
       gsap.from('.about-hero-image', {
         x: 60,
         rotation: 3,
@@ -29,7 +29,6 @@ function About() {
         delay: 0.2
       });
 
-      // Mission Section: left sidebar slides from left, content from right
       gsap.from('.about-mission .sticky', {
         x: -60,
         opacity: 0,
@@ -41,6 +40,7 @@ function About() {
           toggleActions: 'play none none reverse'
         }
       });
+      
       gsap.from('.about-mission .md\\:col-span-8 > *', {
         x: 60,
         opacity: 0,
@@ -54,7 +54,6 @@ function About() {
         }
       });
 
-      // Models Grid: each card alternates left/right with bounce
       const modelCards = gsap.utils.toArray('.model-card');
       modelCards.forEach((card, i) => {
         const direction = i % 2 === 0 ? -1 : 1;
@@ -72,7 +71,6 @@ function About() {
         });
       });
 
-      // Vision Section: text from left, images from right
       gsap.from('.vision-section .relative.z-10 > div:first-child', {
         x: -60,
         opacity: 0,
@@ -84,6 +82,7 @@ function About() {
           toggleActions: 'play none none reverse'
         }
       });
+      
       gsap.from('.vision-section .grid.grid-cols-2 > *', {
         x: 60,
         opacity: 0,
@@ -97,7 +96,6 @@ function About() {
         }
       });
 
-      // Footer CTA: splits from center
       gsap.from('.about-footer-cta .max-w-md', {
         x: -50,
         opacity: 0,
@@ -109,6 +107,7 @@ function About() {
           toggleActions: 'play none none reverse'
         }
       });
+      
       gsap.from('.about-footer-cta .max-w-lg', {
         x: 50,
         opacity: 0,
@@ -121,7 +120,6 @@ function About() {
         }
       });
 
-      // Footer columns stagger in
       gsap.from('.about-footer .grid > *', {
         y: 30,
         opacity: 0,
@@ -140,13 +138,24 @@ function About() {
   }, []);
 
   return (
-    <div className="font-body-md overflow-x-hidden bg-[#F3EAE3] text-[#000000] min-h-screen flex flex-col justify-between" ref={containerRef}>
-
+    <div
+      className={`font-body-md overflow-x-hidden min-h-screen flex flex-col justify-between transition-colors duration-300 ${
+        theme === 'dark'
+          ? 'bg-background text-on-background'
+          : 'bg-[#F3EAE3] text-[#000000]'
+      }`}
+      ref={containerRef}
+    >
       <main className="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl space-y-2xl flex-grow w-full">
-        {/* Hero Section */}
         <section className="flex flex-col md:flex-row items-center gap-xl">
           <div className="flex-1 space-y-md about-hero-text">
-            <span className="bg-badge-cyan border-2 border-border px-4 py-1 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-sm inline-block">
+            <span
+              className={`${
+                theme === 'dark'
+                  ? 'bg-badge-cyan text-on-surface'
+                  : 'bg-badge-cyan'
+              } border-2 border-border px-4 py-1 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-sm inline-block`}
+            >
               TENTANG PROMPTVAULT
             </span>
             <h1 className="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl font-black">
@@ -154,60 +163,123 @@ function About() {
               <span className="text-primary italic">kreativitas manusia</span>{' '}
               dan AI.
             </h1>
-            <p className="text-on-surface-variant text-lg max-w-xl">
+            <p
+              className={`${
+                theme === 'dark' ? 'text-on-surface-variant' : 'text-on-surface-variant'
+              } text-lg max-w-xl`}
+            >
               PromptVault adalah repositori neubrutalist paling ekspresif di
               dunia untuk prompt AI berperforma tinggi, dikurasi oleh manusia,
               untuk manusia.
             </p>
           </div>
           <div className="flex-1 relative w-full h-[400px] about-hero-image">
-            <div className="absolute inset-0 bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden"></div>
-            <div className="absolute -bottom-6 -right-6 bg-badge-orange p-lg max-w-[200px] z-10 rotate-3 bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div
+              className={`${
+                theme === 'dark' ? 'bg-surface' : 'bg-white'
+              } absolute inset-0 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden`}
+            ></div>
+            <div
+              className={`${
+                theme === 'dark'
+                  ? 'bg-badge-orange text-on-surface'
+                  : 'bg-badge-orange'
+              } p-lg max-w-[200px] z-10 rotate-3 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] absolute -bottom-6 -right-6`}
+            >
               <p className="font-bold text-center">1Jt+ Prompt Dikurasi</p>
             </div>
           </div>
         </section>
 
-        {/* Our Mission */}
         <section className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start about-mission">
           <div className="md:col-span-4 sticky top-32">
             <h2 className="font-headline-lg text-headline-lg font-black">
               Misi Kami
             </h2>
-            <div className="h-2 w-24 bg-primary mt-sm border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
+            <div
+              className={`${
+                theme === 'dark'
+                  ? 'bg-primary border-border'
+                  : 'bg-primary border-border'
+              } h-2 w-24 mt-sm border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+            ></div>
           </div>
           <div className="md:col-span-8 space-y-lg">
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg space-y-md">
-              <p className="text-lg leading-relaxed">
+            <div
+              className={`${
+                theme === 'dark' ? 'bg-surface' : 'bg-white'
+              } border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg space-y-md`}
+            >
+              <p
+                className={`${
+                  theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                } text-lg leading-relaxed`}
+              >
                 PromptVault lahir dari observasi sederhana: AI adalah alat,
                 tetapi{' '}
                 <strong className="text-primary">prompt adalah bahasa seni.</strong>{' '}
                 Kami percaya bahwa batasan antara ide brilian dan hasil yang
                 memukau tidak seharusnya menjadi masalah teknis.
               </p>
-              <p className="text-lg leading-relaxed">
+              <p
+                className={`${
+                  theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                } text-lg leading-relaxed`}
+              >
                 Platform kami berfungsi sebagai ekosistem berbasis komunitas di
                 mana para insinyur, seniman, dan antusias berkolaborasi untuk
                 membangun repositori logika generatif terbaik. Kami bukan
                 sekadar marketplace; kami adalah perpustakaan niat kreatif.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-md pt-md">
-                <div className="p-md bg-surface-container rounded-xl border-2 border-border">
+                <div
+                  className={`${
+                    theme === 'dark' ? 'bg-surface-container' : 'bg-surface-container'
+                  } p-md rounded-xl border-2 border-border`}
+                >
                   <span className="material-symbols-outlined text-primary mb-2">
                     groups
                   </span>
-                  <h4 className="font-bold">Prioritas Komunitas</h4>
-                  <p className="text-sm">
+                  <h4
+                    className={`${
+                      theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                    } font-bold`}
+                  >
+                    Prioritas Komunitas
+                  </h4>
+                  <p
+                    className={`${
+                      theme === 'dark'
+                        ? 'text-on-surface-variant'
+                        : 'text-on-surface-variant'
+                    } text-sm`}
+                  >
                     Digerakkan oleh kontributor yang menyempurnakan dan menilai
                     setiap prompt demi kualitas.
                   </p>
                 </div>
-                <div className="p-md bg-surface-container rounded-xl border-2 border-border">
+                <div
+                  className={`${
+                    theme === 'dark' ? 'bg-surface-container' : 'bg-surface-container'
+                  } p-md rounded-xl border-2 border-border`}
+                >
                   <span className="material-symbols-outlined text-secondary mb-2">
                     bolt
                   </span>
-                  <h4 className="font-bold">Optimasi Performa</h4>
-                  <p className="text-sm">
+                  <h4
+                    className={`${
+                      theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                    } font-bold`}
+                  >
+                    Optimasi Performa
+                  </h4>
+                  <p
+                    className={`${
+                      theme === 'dark'
+                        ? 'text-on-surface-variant'
+                        : 'text-on-surface-variant'
+                    } text-sm`}
+                  >
                     Diuji di berbagai iterasi model untuk memastikan output yang
                     dapat diprediksi.
                   </p>
@@ -217,84 +289,92 @@ function About() {
           </div>
         </section>
 
-        {/* Supported Models */}
         <section className="space-y-xl models-section">
           <div className="text-center space-y-sm">
             <h2 className="font-headline-lg text-headline-lg font-black">
               Dukungan AI Omnichannel
             </h2>
-            <p className="text-on-surface-variant">
+            <p
+              className={`${
+                theme === 'dark' ? 'text-on-surface-variant' : 'text-on-surface-variant'
+              }`}
+            >
               Kami mendukung setiap mesin utama yang menggerakkan revolusi
               kreatif.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
-            {/* GPT-4 */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
-              <div className="w-16 h-16 rounded-full bg-primary-container border-2 border-border flex items-center justify-center">
-                <span
-                  className="material-symbols-outlined text-3xl"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
+            {[
+              {
+                name: 'GPT-4o',
+                icon: 'chat_bubble',
+                bg: 'bg-primary-container',
+                badge: 'Teks & Kode',
+                badgeClass: 'bg-badge-cyan',
+              },
+              {
+                name: 'Midjourney',
+                icon: 'palette',
+                bg: 'bg-secondary-container',
+                badge: 'Seni Generatif',
+                badgeClass: 'bg-badge-orange',
+              },
+              {
+                name: 'Claude 3.5',
+                icon: 'auto_awesome',
+                bg: 'bg-surface-container-highest',
+                badge: 'Analitis',
+                badgeClass: 'bg-tertiary-fixed',
+              },
+              {
+                name: 'DALL-E 3',
+                icon: 'image',
+                bg: 'bg-error-container',
+                badge: 'Seni Terintegrasi',
+                badgeClass: 'bg-outline-variant',
+              },
+            ].map((model) => (
+              <div
+                key={model.name}
+                className={`${
+                  theme === 'dark' ? 'bg-surface' : 'bg-white'
+                } border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card`}
+              >
+                <div
+                  className={`${model.bg} w-16 h-16 rounded-full border-2 border-border flex items-center justify-center`}
                 >
-                  chat_bubble
+                  <span
+                    className="material-symbols-outlined text-3xl"
+                    style={{ fontVariationSettings: '"FILL" 1' }}
+                  >
+                    {model.icon}
+                  </span>
+                </div>
+                <span
+                  className={`${
+                    theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                  } font-bold text-lg`}
+                >
+                  {model.name}
+                </span>
+                <span
+                  className={`${model.badgeClass} ${
+                    theme === 'dark' ? 'text-on-surface' : 'text-on-surface'
+                  } px-3 py-1 rounded-full text-xs font-bold border-2 border-border`}
+                >
+                  {model.badge}
                 </span>
               </div>
-              <span className="font-bold text-lg">GPT-4o</span>
-              <span className="bg-badge-cyan px-3 py-1 rounded-full text-xs font-bold border-2 border-border">
-                Teks &amp; Kode
-              </span>
-            </div>
-            {/* Midjourney */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
-              <div className="w-16 h-16 rounded-full bg-secondary-container border-2 border-border flex items-center justify-center">
-                <span
-                  className="material-symbols-outlined text-3xl"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  palette
-                </span>
-              </div>
-              <span className="font-bold text-lg">Midjourney</span>
-              <span className="bg-badge-orange px-3 py-1 rounded-full text-xs font-bold border-2 border-border">
-                Seni Generatif
-              </span>
-            </div>
-            {/* Claude */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
-              <div className="w-16 h-16 rounded-full bg-surface-container-highest border-2 border-border flex items-center justify-center">
-                <span
-                  className="material-symbols-outlined text-3xl"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  auto_awesome
-                </span>
-              </div>
-              <span className="font-bold text-lg">Claude 3.5</span>
-              <span className="bg-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold border-2 border-border">
-                Analitis
-              </span>
-            </div>
-            {/* DALL-E */}
-            <div className="bg-white border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-lg flex flex-col items-center gap-md hover:-translate-y-1 transition-transform cursor-pointer model-card">
-              <div className="w-16 h-16 rounded-full bg-error-container border-2 border-border flex items-center justify-center">
-                <span
-                  className="material-symbols-outlined text-3xl"
-                  style={{ fontVariationSettings: '"FILL" 1' }}
-                >
-                  image
-                </span>
-              </div>
-              <span className="font-bold text-lg">DALL-E 3</span>
-              <span className="bg-outline-variant px-3 py-1 rounded-full text-xs font-bold border-2 border-border">
-                Seni Terintegrasi
-              </span>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* The Vision / Team */}
         <section className="bg-primary text-on-primary p-xl overflow-hidden relative border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] vision-section">
-          <div className="absolute -right-20 -top-20 w-64 h-64 border-[10px] border-black/20 rounded-full"></div>
+          <div
+            className={`absolute -right-20 -top-20 w-64 h-64 border-[10px] ${
+              theme === 'dark' ? 'border-white/10' : 'border-black/20'
+            } rounded-full`}
+          ></div>
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
             <div className="space-y-md">
               <h2 className="font-headline-lg text-headline-lg text-on-primary font-black">
@@ -312,7 +392,7 @@ function About() {
                 mendemokratisasi era AI.
               </p>
               <div className="pt-md">
-                <button className="bg-white text-black font-bold px-lg py-sm rounded-full border-[2.5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer">
+                <button className="bg-white text-black font-bold px-lg py-sm rounded-full border-[2.5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer">
                   Bergabung dengan Kolektif
                 </button>
               </div>
@@ -337,9 +417,12 @@ function About() {
         </section>
       </main>
 
-      {/* Footer CTA & Footer */}
       <section className="pb-2xl px-margin-mobile md:px-margin-desktop about-footer-cta">
-        <div className="max-w-7xl mx-auto bg-primary-container border-[4px] border-black rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl">
+        <div
+          className={`${
+            theme === 'dark' ? 'bg-primary-container' : 'bg-primary-container'
+          } max-w-7xl mx-auto border-[4px] border-black rounded-[32px] p-xl flex flex-col md:flex-row items-center justify-between gap-xl`}
+        >
           <div className="max-w-md">
             <h2 className="font-headline-lg text-[2.5rem] mb-md leading-tight font-black">
               Bergabung dengan Lingkaran Dalam
@@ -351,18 +434,20 @@ function About() {
           </div>
           <div className="flex flex-col sm:flex-row w-full max-w-lg gap-md">
             <input
-              className="flex-1 bg-surface border-[3px] border-black rounded-full px-lg py-md focus:ring-0 focus:outline-none font-label-sm"
+              className={`${
+                theme === 'dark' ? 'bg-surface text-on-surface' : 'bg-surface'
+              } flex-1 border-[3px] border-black rounded-full px-lg py-md focus:ring-0 focus:outline-none font-label-sm`}
               placeholder="master_prompt@email.com"
               type="email"
             />
-            <button className="bg-on-background text-surface px-xl py-md rounded-full font-headline-lg text-xl whitespace-nowrap cursor-pointer">
+            <button className="bg-on-background text-surface px-xl py-md rounded-full font-headline-lg text-xl whitespace-nowrap cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
               Berlangganan
             </button>
           </div>
         </div>
       </section>
 
-      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop about-footer">
+      <footer className="bg-surface-container-highest border-t-[3px] border-black py-2xl px-margin-mobile md:px-margin-desktop about-footer transition-colors duration-300">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
           <div className="col-span-1 md:col-span-2">
             <Link
@@ -377,7 +462,9 @@ function About() {
             </p>
             <div className="flex gap-md">
               <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className={`${
+                  theme === 'dark' ? 'bg-surface' : 'bg-surface'
+                } w-12 h-12 border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all`}
                 href="#"
               >
                 <span className="material-symbols-outlined">
@@ -385,7 +472,9 @@ function About() {
                 </span>
               </a>
               <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className={`${
+                  theme === 'dark' ? 'bg-surface' : 'bg-surface'
+                } w-12 h-12 border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all`}
                 href="#"
               >
                 <span className="material-symbols-outlined">
@@ -393,7 +482,9 @@ function About() {
                 </span>
               </a>
               <a
-                className="w-12 h-12 bg-surface border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className={`${
+                  theme === 'dark' ? 'bg-surface' : 'bg-surface'
+                } w-12 h-12 border-[2px] border-black rounded-full flex items-center justify-center hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all`}
                 href="#"
               >
                 <span className="material-symbols-outlined">public</span>
@@ -401,9 +492,7 @@ function About() {
             </div>
           </div>
           <div>
-            <h4 className="font-headline-lg text-xl mb-lg font-black">
-              Marketplace
-            </h4>
+            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">Marketplace</h4>
             <ul className="space-y-sm">
               <li>
                 <Link
@@ -440,7 +529,7 @@ function About() {
             </ul>
           </div>
           <div>
-            <h4 className="font-headline-lg text-xl mb-lg font-black">Legal</h4>
+            <h4 className="font-headline-lg text-xl mb-lg font-black font-['Syne']">Legal</h4>
             <ul className="space-y-sm">
               <li>
                 <a
@@ -487,8 +576,8 @@ function About() {
             </span>
           </div>
         </div>
-       </footer>
-     </div>
+      </footer>
+    </div>
   );
 }
 

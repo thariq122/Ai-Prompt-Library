@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTheme } from '../contexts/ThemeContext';
 import { useFavorites } from '../contexts/FavoritesContext';
-import { allPrompts } from '../data/prompts';
+import { usePromptStore } from '../contexts/PromptStoreContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,7 +14,9 @@ function Favorites() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [copied, setCopied] = useState(false);
   const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+  const { theme } = useTheme();
   const { favoriteIds, toggleFavorite, isFavorite } = useFavorites();
+  const { prompts: allPrompts } = usePromptStore();
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -48,7 +51,11 @@ function Favorites() {
 
   return (
     <div
-      className="min-h-screen flex flex-col font-body-md text-on-surface bg-[#F3EAE3] transition-colors duration-300"
+      className={`min-h-screen flex flex-col font-body-md transition-colors duration-300 ${
+        theme === 'dark'
+          ? 'bg-background text-on-background'
+          : 'bg-[#F3EAE3] text-on-surface'
+      }`}
       ref={containerRef}
     >
       <main className="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">

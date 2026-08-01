@@ -9,6 +9,7 @@ import BottomNav from './components/BottomNav';
 import PageTransition from './components/PageTransition';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
+import { PromptStoreProvider } from './contexts/PromptStoreContext';
 
 function App() {
   const location = useLocation();
@@ -16,21 +17,23 @@ function App() {
   return (
     <ThemeProvider>
       <FavoritesProvider>
-        <div className="flex flex-col min-h-screen bg-background text-on-background transition-colors duration-300">
-          <Navbar />
-          <main className="flex-grow">
-            <PageTransition key={location.pathname}>
-              <Routes location={location}>
-                <Route path="/" element={<Home />} />
-                <Route path="/submit" element={<Submit />} />
-                <Route path="/favorites" element={<Favorites />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/allprompt" element={<AllPrompt />} />
-              </Routes>
-            </PageTransition>
-          </main>
-          <BottomNav />
-        </div>
+        <PromptStoreProvider>
+          <div className="flex flex-col min-h-screen bg-background text-on-background transition-colors duration-300">
+            <Navbar />
+            <main className="flex-grow">
+              <PageTransition key={location.pathname}>
+                <Routes location={location}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/submit" element={<Submit />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/allprompt" element={<AllPrompt />} />
+                </Routes>
+              </PageTransition>
+            </main>
+            <BottomNav />
+          </div>
+        </PromptStoreProvider>
       </FavoritesProvider>
     </ThemeProvider>
   );
