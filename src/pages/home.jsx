@@ -328,7 +328,7 @@ function Home() {
         </div>
       </div>
 
-      {/* Filters & Search */}
+      {/* Filters */}
       <section className="py-xl px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row gap-lg justify-between items-center mb-2xl">
           <div className="flex flex-wrap gap-sm justify-center md:justify-start">
@@ -347,16 +347,6 @@ function Home() {
             <button className="bg-surface border-[2px] border-black px-md py-sm rounded-full font-label-sm hover:bg-secondary-fixed transition-all cursor-pointer hover:scale-105">
               Claude 3
             </button>
-          </div>
-          <div className="relative w-full max-w-md">
-            <input
-              className="w-full bg-surface border-[3px] border-black rounded-full px-xl py-md shadow-brutal focus:ring-0 focus:outline-none transition-all focus:translate-x-1"
-              placeholder="Cari prompt, model, penulis..."
-              type="text"
-            />
-            <span className="material-symbols-outlined absolute right-lg top-1/2 -translate-y-1/2 text-on-surface-variant">
-              search
-            </span>
           </div>
         </div>
 
